@@ -6,6 +6,7 @@ import com.br.financialmanager.infra.persistence.UsuarioEntity;
 import com.br.financialmanager.infra.persistence.UsuarioRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RepositorioDeUsuarioJpa implements RepositorioDeUsuario {
   private final UsuarioRepository repositorio;
@@ -21,11 +22,14 @@ public class RepositorioDeUsuarioJpa implements RepositorioDeUsuario {
     UsuarioEntity entity = mapper.toEntity(usuario);
     repositorio.save(entity);
     return mapper.toDomain(entity);
+
+
   }
 
   @Override
   public List<Usuario> listarTodos() {
-    //return repositorio.findAll();
-    return null;
+    return repositorio.findAll().stream()
+      .map(mapper::toDomain)
+      .collect(Collectors.toList());
   }
 }
