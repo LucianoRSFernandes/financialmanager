@@ -1,7 +1,9 @@
 package com.br.financialmanager.config;
 
 import com.br.financialmanager.application.gateways.RepositorioDeUsuario;
+import com.br.financialmanager.application.usecases.AlterarUsuario;
 import com.br.financialmanager.application.usecases.CriarUsuario;
+import com.br.financialmanager.application.usecases.ExcluirUsuario;
 import com.br.financialmanager.application.usecases.ListarUsuarios;
 import com.br.financialmanager.infra.gateways.RepositorioDeUsuarioJpa;
 import com.br.financialmanager.infra.gateways.UsuarioEntityMapper;
@@ -31,6 +33,16 @@ public class UsuarioConfig {
   UsuarioEntityMapper retornaMapper() {
     return new UsuarioEntityMapper();
 
+  }
+
+  @Bean
+  AlterarUsuario alteraUsuario(RepositorioDeUsuario repositorioDeUsuario){
+    return new AlterarUsuario(repositorioDeUsuario);
+  }
+
+  @Bean
+  ExcluirUsuario excluiUsuario(RepositorioDeUsuario repositorioDeUsuario){
+    return new ExcluirUsuario(repositorioDeUsuario);
   }
 
 }
