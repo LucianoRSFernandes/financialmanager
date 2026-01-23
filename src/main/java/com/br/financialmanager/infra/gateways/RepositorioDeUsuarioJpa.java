@@ -22,8 +22,6 @@ public class RepositorioDeUsuarioJpa implements RepositorioDeUsuario {
     UsuarioEntity entity = mapper.toEntity(usuario);
     repositorio.save(entity);
     return mapper.toDomain(entity);
-
-
   }
 
   @Override
