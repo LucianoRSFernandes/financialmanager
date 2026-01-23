@@ -8,12 +8,10 @@ import com.br.financialmanager.infra.persistence.UsuarioRepository;
 import java.util.List;
 
 public class RepositorioDeUsuarioJpa implements RepositorioDeUsuario {
-
   private final UsuarioRepository repositorio;
-
   private final UsuarioEntityMapper mapper;
 
-  public RepositorioDeUsuarioJpa (UsuarioRepository repositorio, UsuarioEntityMapper mapper) {
+  public RepositorioDeUsuarioJpa(UsuarioRepository repositorio, UsuarioEntityMapper mapper) {
     this.repositorio = repositorio;
     this.mapper = mapper;
   }
@@ -30,5 +28,4 @@ public class RepositorioDeUsuarioJpa implements RepositorioDeUsuario {
     //return repositorio.findAll();
     return null;
   }
-
 }
