@@ -6,6 +6,7 @@ public record UsuarioDto(
   String cpf,
   String nome,
   LocalDate nascimento,
-  String email
+  String email,
+  String senha
 ) {
 }

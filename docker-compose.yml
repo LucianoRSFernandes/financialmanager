@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # --- Banco de Dados do MS1 (Usuários) ---
+  postgres-user-db:
+    image: postgres:15-alpine
+    container_name: postgres-user-db
+    environment:
+      - POSTGRES_DB=financialmanager
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432" # Mapeia a porta do container para a sua máquina
+    volumes:
+      - postgres-user-data:/var/lib/postgresql/data
+
+  # --- Banco de Dados do MS2 (Transações) ---
+  postgres-transaction-db:
+    image: postgres:15-alpine
+    container_name: postgres-transaction-db
+    environment:
+      - POSTGRES_DB=transactions_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5433:5432" # Atenção: Na sua máquina será porta 5433, mas dentro do container é 5432
+    volumes:
+      - postgres-transaction-data:/var/lib/postgresql/data
+
+  # --- Broker de Mensageria (Kafka) ---
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+volumes:
+  postgres-user-data:
+  postgres-transaction-data:

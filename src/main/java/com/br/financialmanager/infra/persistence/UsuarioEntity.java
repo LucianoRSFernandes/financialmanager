@@ -14,13 +14,15 @@ public class UsuarioEntity {
   private String nome;
   private LocalDate nascimento;
   private String email;
+  private String senha;
 
   public UsuarioEntity() {}
-  public UsuarioEntity(String cpf, String nome, LocalDate nascimento, String email) {
+  public UsuarioEntity(String cpf, String nome, LocalDate nascimento, String email, String senha) {
     this.cpf = cpf;
     this.nome = nome;
     this.nascimento = nascimento;
     this.email = email;
+    this.senha = senha;
   }
 
   public Long getId() {
@@ -61,5 +63,13 @@ public class UsuarioEntity {
 
   public void setEmail(String email) {
     this.email = email;
+  }
+
+  public String getSenha() {
+    return senha;
+  }
+
+  public void setSenha(String senha) {
+    this.senha = senha;
   }
 }

@@ -3,12 +3,13 @@ package com.br.financialmanager.domain.entities;
 import java.time.LocalDate;
 
 public class Usuario {
+  private String senha;
   private String cpf;
   private String nome;
   private LocalDate nascimento;
   private String email;
 
-  public Usuario (String cpf, String nome, LocalDate nascimento, String email) {
+  public Usuario (String cpf, String nome, LocalDate nascimento, String email, String senha) {
     if (cpf == null || !cpf.matches("\\d{3}\\.\\d{3}\\.\\d{3}\\-\\d{2}")) {
       throw new IllegalArgumentException("CPF fora do padrão");
     }
@@ -16,6 +17,7 @@ public class Usuario {
     this.nome = nome;
     this.nascimento = nascimento;
     this.email = email;
+    this.senha = senha;
   }
 
   public String getCpf() {
@@ -48,5 +50,9 @@ public class Usuario {
 
   public void setEmail(String email) {
     this.email = email;
+  }
+
+  public String getSenha() {
+    return senha;
   }
 }
