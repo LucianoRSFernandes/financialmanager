@@ -2,7 +2,9 @@ package com.br.financialmanager.config;
 
 import com.br.financialmanager.application.gateways.PublicadorDeTransacao;
 import com.br.financialmanager.application.gateways.RepositorioDeTransacao;
+import com.br.financialmanager.application.gateways.ValidadorDeSaldo;
 import com.br.financialmanager.application.usecases.CriarTransacao;
+import com.br.financialmanager.application.usecases.ProcessarTransacao;
 import com.br.financialmanager.infra.gateways.RepositorioDeTransacaoJpa;
 import com.br.financialmanager.infra.persistence.TransacaoRepository;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -19,11 +21,16 @@ public class TransacaoConfig {
   }
 
   @Bean
+  ProcessarTransacao processarTransacao(RepositorioDeTransacao repo, ValidadorDeSaldo validador) {
+    return new ProcessarTransacao(repo, validador);
+  }
+
+  @Bean
   RepositorioDeTransacaoJpa repositorioDeTransacaoJpa(TransacaoRepository repository) {
     return new RepositorioDeTransacaoJpa(repository);
   }
 
-   @Bean
+  @Bean
   public NewTopic topicTransactionRequested() {
     return TopicBuilder.name("transaction.requested").partitions(1).replicas(1).build();
   }

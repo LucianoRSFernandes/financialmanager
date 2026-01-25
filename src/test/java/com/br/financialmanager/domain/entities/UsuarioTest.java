@@ -14,7 +14,7 @@ public class UsuarioTest {
       "email@email.com"));
 
     Assertions.assertThrows(IllegalArgumentException.class,
-      () -> new Usuario("", "Eva", LocalDate.parse("1999-10-11"),
+      () -> new Usuario("", "Eva", LocalDate.parse("1999-11-11"),
       "email@email.com"));
   }
 
