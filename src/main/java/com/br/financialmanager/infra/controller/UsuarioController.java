@@ -1,9 +1,6 @@
 package com.br.financialmanager.infra.controller;
 
-import com.br.financialmanager.application.usecases.AlterarUsuario;
-import com.br.financialmanager.application.usecases.CriarUsuario;
-import com.br.financialmanager.application.usecases.ExcluirUsuario;
-import com.br.financialmanager.application.usecases.ListarUsuarios;
+import com.br.financialmanager.application.usecases.*;
 import com.br.financialmanager.domain.entities.Usuario;
 import com.br.financialmanager.infra.persistence.UsuarioRepository;
 import com.br.financialmanager.infra.security.TokenService;
@@ -23,6 +20,7 @@ public class UsuarioController {
   private final ExcluirUsuario excluiUsuario;
   private final TokenService tokenService;
   private final UsuarioRepository usuarioRepository;
+  private final ImportarUsuarios importarUsuarios;
 
   public UsuarioController(
     CriarUsuario criarUsuario,
@@ -30,13 +28,15 @@ public class UsuarioController {
     AlterarUsuario alterarUsuario,
     ExcluirUsuario excluirUsuario,
     TokenService tokenService,
-    UsuarioRepository usuarioRepository){
+    UsuarioRepository usuarioRepository,
+    ImportarUsuarios importarUsuarios){
     this.criarUsuario = criarUsuario;
     this.listarUsuarios = listarUsuarios;
     this.alteraUsuario = alterarUsuario;
     this.excluiUsuario = excluirUsuario;
     this.tokenService = tokenService;
     this.usuarioRepository = usuarioRepository;
+    this.importarUsuarios = importarUsuarios;
   }
 
   @PostMapping("/login")
@@ -85,5 +85,15 @@ public class UsuarioController {
   @DeleteMapping("/{cpf}")
   public void excluirUsuario(@PathVariable String cpf) {
     excluiUsuario.excluirUsuario(cpf);
+  }
+
+  @PostMapping(value = "/upload", consumes = "multipart/form-data")
+  public ResponseEntity<String> uploadPlanilha(@RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
+    try {
+      importarUsuarios.executar(file.getInputStream());
+      return ResponseEntity.ok("Importação concluída com sucesso!");
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body("Erro na importação: " + e.getMessage());
+    }
   }
 }

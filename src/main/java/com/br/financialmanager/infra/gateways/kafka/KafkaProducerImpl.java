@@ -8,18 +8,23 @@ import org.springframework.stereotype.Component;
 @Component
 public class KafkaProducerImpl implements PublicadorDeTransacao {
 
-  private final KafkaTemplate<String, String> kafkaTemplate;
+  private final KafkaTemplate<String, Object> kafkaTemplate;
 
-  public KafkaProducerImpl(KafkaTemplate<String, String> kafkaTemplate) {
+  public KafkaProducerImpl(KafkaTemplate<String, Object> kafkaTemplate) {
     this.kafkaTemplate = kafkaTemplate;
   }
 
   @Override
-  public void publicarSolicitacao(Transacao transacao) {
-    // Em projetos reais, usaríamos JSON, mas String funciona para o desafio
-    String mensagem = transacao.getId() + ";" + transacao.getUsuarioId() + ";" + transacao.getValor();
+  public void publicarSolicitacao(Transacao t) {
+    TransacaoEvent event = new TransacaoEvent(
+      t.getId(),
+      t.getUsuarioId(),
+      t.getValorOriginal(),
+      t.getMoeda(),
+      t.getTipo().name()
+    );
 
-    kafkaTemplate.send("transaction.requested", mensagem);
-    System.out.println("Mensagem enviada para o Kafka: " + mensagem);
+    kafkaTemplate.send("transaction.requested", t.getId(), event);
+    System.out.println("✅ [KAFKA PRODUCER] Evento JSON enviado: " + event);
   }
 }

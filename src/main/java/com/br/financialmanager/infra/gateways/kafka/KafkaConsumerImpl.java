@@ -16,19 +16,23 @@ public class KafkaConsumerImpl {
   }
 
   @KafkaListener(topics = "transaction.requested", groupId = "financeiro-group")
-  public void consumirSolicitacao(String mensagem) {
+  public void consumirSolicitacao(TransacaoEvent evento) {
     try {
-      System.out.println("<<< KAFKA: Recebendo mensagem: " + mensagem);
+      System.out.println("📥 [KAFKA CONSUMER] Recebido: " + evento);
 
-      String[] partes = mensagem.split(";");
-      String id = partes[0];
-      String cpf = partes[1];
-      BigDecimal valor = new BigDecimal(partes[2]);
-
-      processarTransacao.executar(id, cpf, valor);
+      processarTransacao.executar(
+        evento.id(),
+        evento.usuarioId(),
+        evento.valor(),
+        evento.moeda(),
+        evento.tipo()
+      );
 
     } catch (Exception e) {
-      System.err.println("Erro ao ler mensagem do Kafka: " + e.getMessage());
+      // Em um cenário real com DLQ configurada, lançaríamos a exceção aqui
+      // para o Kafka tentar novamente ou mover para DLQ.
+      System.err.println("❌ Erro fatal ao processar mensagem: " + e.getMessage());
+      // throw e; // Descomentar quando configurarmos a DLQ
     }
   }
 }

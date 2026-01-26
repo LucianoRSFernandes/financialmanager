@@ -1,10 +1,9 @@
 package com.br.financialmanager.config;
 
+import com.br.financialmanager.application.gateways.LeitorDeArquivo;
 import com.br.financialmanager.application.gateways.RepositorioDeUsuario;
-import com.br.financialmanager.application.usecases.AlterarUsuario;
-import com.br.financialmanager.application.usecases.CriarUsuario;
-import com.br.financialmanager.application.usecases.ExcluirUsuario;
-import com.br.financialmanager.application.usecases.ListarUsuarios;
+import com.br.financialmanager.application.usecases.*;
+import com.br.financialmanager.infra.gateways.LeitorDeExcel;
 import com.br.financialmanager.infra.gateways.RepositorioDeUsuarioJpa;
 import com.br.financialmanager.infra.gateways.UsuarioEntityMapper;
 import com.br.financialmanager.infra.persistence.UsuarioRepository;
@@ -43,6 +42,16 @@ public class UsuarioConfig {
   @Bean
   ExcluirUsuario excluiUsuario(RepositorioDeUsuario repositorioDeUsuario){
     return new ExcluirUsuario(repositorioDeUsuario);
+  }
+
+  @Bean
+  LeitorDeArquivo leitorDeArquivo() {
+    return new LeitorDeExcel();
+  }
+
+  @Bean
+  ImportarUsuarios importarUsuarios(RepositorioDeUsuario repositorio, LeitorDeArquivo leitor) {
+    return new ImportarUsuarios(repositorio, leitor);
   }
 
 }

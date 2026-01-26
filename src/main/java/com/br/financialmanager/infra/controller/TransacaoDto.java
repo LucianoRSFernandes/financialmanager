@@ -4,5 +4,7 @@ import java.math.BigDecimal;
 
 public record TransacaoDto(
   String cpf,
-  BigDecimal valor
+  BigDecimal valor,
+  String moeda,
+  String tipo
 ) {}
