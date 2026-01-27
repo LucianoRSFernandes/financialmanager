@@ -1,7 +1,7 @@
-package com.br.financialmanager.application.usecases;
+package com.br.financialmanager.application.usecases.transaction;
 
-import com.br.financialmanager.application.gateways.PublicadorDeTransacao;
-import com.br.financialmanager.application.gateways.RepositorioDeTransacao;
+import com.br.financialmanager.application.gateways.transaction.PublicadorDeTransacao;
+import com.br.financialmanager.application.gateways.transaction.RepositorioDeTransacao;
 import com.br.financialmanager.domain.transaction.TipoTransacao;
 import com.br.financialmanager.domain.transaction.Transacao;
 

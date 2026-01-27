@@ -1,6 +1,6 @@
 package com.br.financialmanager.infra.gateways;
 
-import com.br.financialmanager.application.gateways.RepositorioDeTransacao;
+import com.br.financialmanager.application.gateways.transaction.RepositorioDeTransacao;
 import com.br.financialmanager.domain.transaction.Transacao;
 import com.br.financialmanager.infra.persistence.TransacaoRepository;
 

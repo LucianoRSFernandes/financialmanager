@@ -11,11 +11,11 @@ public class UsuarioTest {
   public void naoDeveCadastrarUsuarioCpfInvalido(){
     Assertions.assertThrows(IllegalArgumentException.class,
       () -> new Usuario("12345678900", "Eva", LocalDate.parse("1999-11-11"),
-      "email@email.com"));
+      "email@email.com", "123456"));
 
     Assertions.assertThrows(IllegalArgumentException.class,
       () -> new Usuario("", "Eva", LocalDate.parse("1999-11-11"),
-      "email@email.com"));
+      "email@email.com", "123456"));
   }
 
   @Test

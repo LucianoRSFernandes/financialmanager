@@ -1,6 +1,6 @@
 package com.br.financialmanager.infra.gateways;
 
-import com.br.financialmanager.application.gateways.ServicoDeCotacao;
+import com.br.financialmanager.application.gateways.transaction.ServicoDeCotacao;
 import com.br.financialmanager.infra.gateways.http.BrasilApiClient;
 import org.springframework.stereotype.Component;
 

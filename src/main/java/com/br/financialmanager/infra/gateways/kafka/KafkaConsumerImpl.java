@@ -1,12 +1,12 @@
 package com.br.financialmanager.infra.gateways.kafka;
 
-import com.br.financialmanager.application.usecases.ProcessarTransacao;
+import com.br.financialmanager.application.usecases.transaction.ProcessarTransacao;
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-
-@Component
+@Service
+@Profile("worker")
 public class KafkaConsumerImpl {
 
   private final ProcessarTransacao processarTransacao;

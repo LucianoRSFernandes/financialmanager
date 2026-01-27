@@ -1,7 +1,10 @@
 package com.br.financialmanager.infra.controller;
 
-import com.br.financialmanager.application.usecases.*;
+import com.br.financialmanager.application.usecases.user.*;
 import com.br.financialmanager.domain.entities.Usuario;
+import com.br.financialmanager.infra.controller.dto.LoginDto;
+import com.br.financialmanager.infra.gateways.http.ContaMockDto;
+import com.br.financialmanager.infra.gateways.http.MockApiClient;
 import com.br.financialmanager.infra.persistence.UsuarioRepository;
 import com.br.financialmanager.infra.security.TokenService;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +24,7 @@ public class UsuarioController {
   private final TokenService tokenService;
   private final UsuarioRepository usuarioRepository;
   private final ImportarUsuarios importarUsuarios;
+  private final MockApiClient mockApiClient;
 
   public UsuarioController(
     CriarUsuario criarUsuario,
@@ -29,7 +33,8 @@ public class UsuarioController {
     ExcluirUsuario excluirUsuario,
     TokenService tokenService,
     UsuarioRepository usuarioRepository,
-    ImportarUsuarios importarUsuarios){
+    ImportarUsuarios importarUsuarios,
+    MockApiClient mockApiClient){
     this.criarUsuario = criarUsuario;
     this.listarUsuarios = listarUsuarios;
     this.alteraUsuario = alterarUsuario;
@@ -37,6 +42,7 @@ public class UsuarioController {
     this.tokenService = tokenService;
     this.usuarioRepository = usuarioRepository;
     this.importarUsuarios = importarUsuarios;
+    this.mockApiClient = mockApiClient;
   }
 
   @PostMapping("/login")
@@ -95,5 +101,11 @@ public class UsuarioController {
     } catch (Exception e) {
       return ResponseEntity.badRequest().body("Erro na importação: " + e.getMessage());
     }
+  }
+
+  @GetMapping("/{id}/saldo")
+  public ResponseEntity<ContaMockDto> consultarSaldo(@PathVariable String id) {
+    var saldo = mockApiClient.buscarConta("1");
+    return ResponseEntity.ok(saldo);
   }
 }

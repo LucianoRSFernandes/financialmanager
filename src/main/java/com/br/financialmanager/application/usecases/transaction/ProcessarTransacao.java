@@ -1,9 +1,9 @@
-package com.br.financialmanager.application.usecases;
+package com.br.financialmanager.application.usecases.transaction;
 
 
-import com.br.financialmanager.application.gateways.RepositorioDeTransacao;
-import com.br.financialmanager.application.gateways.ServicoDeCotacao;
-import com.br.financialmanager.application.gateways.ValidadorDeSaldo;
+import com.br.financialmanager.application.gateways.transaction.RepositorioDeTransacao;
+import com.br.financialmanager.application.gateways.transaction.ServicoDeCotacao;
+import com.br.financialmanager.application.gateways.transaction.ValidadorDeSaldo;
 import com.br.financialmanager.domain.transaction.StatusTransacao;
 import com.br.financialmanager.domain.transaction.TipoTransacao;
 import com.br.financialmanager.domain.transaction.Transacao;

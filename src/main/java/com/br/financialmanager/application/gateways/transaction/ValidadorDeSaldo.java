@@ -1,4 +1,4 @@
-package com.br.financialmanager.application.gateways;
+package com.br.financialmanager.application.gateways.transaction;
 
 import java.math.BigDecimal;
 

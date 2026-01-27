@@ -1,6 +1,6 @@
 package com.br.financialmanager.infra.gateways;
 
-import com.br.financialmanager.application.gateways.RepositorioDeUsuario;
+import com.br.financialmanager.application.gateways.user.RepositorioDeUsuario;
 import com.br.financialmanager.domain.entities.Usuario;
 import com.br.financialmanager.infra.persistence.UsuarioEntity;
 import com.br.financialmanager.infra.persistence.UsuarioRepository;

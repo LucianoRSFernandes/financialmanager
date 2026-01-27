@@ -1,6 +1,6 @@
 package com.br.financialmanager.infra.gateways;
 
-import com.br.financialmanager.application.gateways.ValidadorDeSaldo;
+import com.br.financialmanager.application.gateways.transaction.ValidadorDeSaldo;
 import com.br.financialmanager.infra.gateways.http.BrasilApiClient;
 import com.br.financialmanager.infra.gateways.http.MockApiClient;
 import org.springframework.stereotype.Component;

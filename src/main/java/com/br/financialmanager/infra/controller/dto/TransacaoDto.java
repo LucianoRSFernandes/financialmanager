@@ -1,4 +1,4 @@
-package com.br.financialmanager.infra.controller;
+package com.br.financialmanager.infra.controller.dto;
 
 import java.math.BigDecimal;
 

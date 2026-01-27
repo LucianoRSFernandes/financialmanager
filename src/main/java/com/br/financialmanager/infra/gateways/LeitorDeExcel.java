@@ -1,6 +1,6 @@
 package com.br.financialmanager.infra.gateways;
 
-import com.br.financialmanager.application.gateways.LeitorDeArquivo;
+import com.br.financialmanager.application.gateways.user.LeitorDeArquivo;
 import com.br.financialmanager.domain.entities.Usuario;
 import org.apache.poi.ss.usermodel.*;
 

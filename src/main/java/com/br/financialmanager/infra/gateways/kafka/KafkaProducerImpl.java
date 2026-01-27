@@ -1,6 +1,6 @@
 package com.br.financialmanager.infra.gateways.kafka;
 
-import com.br.financialmanager.application.gateways.PublicadorDeTransacao;
+import com.br.financialmanager.application.gateways.transaction.PublicadorDeTransacao;
 import com.br.financialmanager.domain.transaction.Transacao;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;

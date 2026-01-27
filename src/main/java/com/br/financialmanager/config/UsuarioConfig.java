@@ -1,8 +1,8 @@
 package com.br.financialmanager.config;
 
-import com.br.financialmanager.application.gateways.LeitorDeArquivo;
-import com.br.financialmanager.application.gateways.RepositorioDeUsuario;
-import com.br.financialmanager.application.usecases.*;
+import com.br.financialmanager.application.gateways.user.LeitorDeArquivo;
+import com.br.financialmanager.application.gateways.user.RepositorioDeUsuario;
+import com.br.financialmanager.application.usecases.user.*;
 import com.br.financialmanager.infra.gateways.LeitorDeExcel;
 import com.br.financialmanager.infra.gateways.RepositorioDeUsuarioJpa;
 import com.br.financialmanager.infra.gateways.UsuarioEntityMapper;

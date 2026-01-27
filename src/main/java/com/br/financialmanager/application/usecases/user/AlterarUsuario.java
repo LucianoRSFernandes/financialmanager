@@ -1,6 +1,6 @@
-package com.br.financialmanager.application.usecases;
+package com.br.financialmanager.application.usecases.user;
 
-import com.br.financialmanager.application.gateways.RepositorioDeUsuario;
+import com.br.financialmanager.application.gateways.user.RepositorioDeUsuario;
 import com.br.financialmanager.domain.entities.Usuario;
 
 public class AlterarUsuario {

@@ -1,10 +1,10 @@
 package com.br.financialmanager.config;
 
-import com.br.financialmanager.application.gateways.PublicadorDeTransacao;
-import com.br.financialmanager.application.gateways.RepositorioDeTransacao;
-import com.br.financialmanager.application.gateways.ServicoDeCotacao;
-import com.br.financialmanager.application.gateways.ValidadorDeSaldo;
-import com.br.financialmanager.application.usecases.*;
+import com.br.financialmanager.application.gateways.transaction.PublicadorDeTransacao;
+import com.br.financialmanager.application.gateways.transaction.RepositorioDeTransacao;
+import com.br.financialmanager.application.gateways.transaction.ServicoDeCotacao;
+import com.br.financialmanager.application.gateways.transaction.ValidadorDeSaldo;
+import com.br.financialmanager.application.usecases.transaction.*;
 import com.br.financialmanager.infra.gateways.RepositorioDeTransacaoJpa;
 import com.br.financialmanager.infra.persistence.TransacaoRepository;
 import org.apache.kafka.clients.admin.NewTopic;
