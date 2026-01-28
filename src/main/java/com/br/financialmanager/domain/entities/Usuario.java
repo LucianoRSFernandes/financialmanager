@@ -13,6 +13,10 @@ public class Usuario {
     if (cpf == null || !cpf.matches("\\d{3}\\.\\d{3}\\.\\d{3}\\-\\d{2}")) {
       throw new IllegalArgumentException("CPF fora do padrão");
     }
+
+    if (senha == null || senha.trim().length() < 6) {
+      throw new IllegalArgumentException("A senha deve ter pelo menos 6 caracteres");
+    }
     this.cpf = cpf;
     this.nome = nome;
     this.nascimento = nascimento;

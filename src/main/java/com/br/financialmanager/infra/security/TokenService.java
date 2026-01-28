@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.br.financialmanager.domain.entities.Usuario;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -13,14 +14,16 @@ import java.time.ZoneOffset;
 
 @Service
 public class TokenService {
-  private String secret = "minha-chave-secreta-super-dificil"; // Em prod, isso vem do application.properties
+
+  @Value("${api.security.token.secret}")
+  private String secret;
 
   public String gerarToken(Usuario usuario) {
     try {
       Algorithm algorithm = Algorithm.HMAC256(secret);
       return JWT.create()
         .withIssuer("financial-manager")
-        .withSubject(usuario.getCpf()) // O CPF será o ID no token
+        .withSubject(usuario.getCpf())
         .withExpiresAt(dataExpiracao())
         .sign(algorithm);
     } catch (JWTCreationException exception) {

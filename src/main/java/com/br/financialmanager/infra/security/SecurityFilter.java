@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -25,19 +26,14 @@ public class SecurityFilter extends OncePerRequestFilter {
   }
 
   @Override
-  protected void doFilterInternal(
-    HttpServletRequest request,
-    HttpServletResponse response,
-    FilterChain filterChain) throws ServletException, IOException {
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
     var token = recuperarToken(request);
     if (token != null) {
       var login = tokenService.validarToken(token);
-      var userEntity = repository.findByCpf(login);
+      UserDetails user = repository.findByCpf(login);
 
-      if (userEntity != null) {
-        // Cria um usuário "fake" do Spring Security apenas para passar na validação
-        // No futuro, podemos implementar UserDetails corretamente se sobrar tempo
-        var authentication = new UsernamePasswordAuthenticationToken(userEntity, null, Collections.emptyList());
+      if (user != null) {
+        var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
       }
     }

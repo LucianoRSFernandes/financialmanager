@@ -9,6 +9,7 @@ import com.br.financialmanager.infra.gateways.UsuarioEntityMapper;
 import com.br.financialmanager.infra.persistence.UsuarioRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class UsuarioConfig {
@@ -31,7 +32,6 @@ public class UsuarioConfig {
   @Bean
   UsuarioEntityMapper retornaMapper() {
     return new UsuarioEntityMapper();
-
   }
 
   @Bean
@@ -50,8 +50,7 @@ public class UsuarioConfig {
   }
 
   @Bean
-  ImportarUsuarios importarUsuarios(RepositorioDeUsuario repositorio, LeitorDeArquivo leitor) {
-    return new ImportarUsuarios(repositorio, leitor);
+  ImportarUsuarios importarUsuarios(RepositorioDeUsuario repositorio, LeitorDeArquivo leitor, PasswordEncoder encoder) {
+    return new ImportarUsuarios(repositorio, leitor, encoder);
   }
-
 }

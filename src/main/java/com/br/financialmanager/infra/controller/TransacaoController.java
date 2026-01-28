@@ -13,6 +13,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -113,8 +114,15 @@ public class TransacaoController {
   }
 
   @PostMapping
-  public ResponseEntity<Void> solicitarTransacao(@RequestBody @Valid TransacaoRequestDto request) {
-    criarTransacao.executar(request.cpf(), request.valor(), request.moeda(), request.tipo());
-    return ResponseEntity.ok().build();
+  public ResponseEntity<Transacao> solicitarTransacao(@RequestBody @Valid TransacaoRequestDto request) {
+
+    Transacao novaTransacao = criarTransacao.executar(
+      request.cpf(),
+      request.valor(),
+      request.moeda(),
+      request.tipo()
+    );
+
+    return ResponseEntity.status(HttpStatus.CREATED).body(novaTransacao);
   }
 }
