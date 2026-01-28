@@ -5,7 +5,7 @@ import com.br.financialmanager.application.gateways.transaction.RepositorioDeTra
 import com.br.financialmanager.application.gateways.transaction.ServicoDeCotacao;
 import com.br.financialmanager.application.gateways.transaction.ValidadorDeSaldo;
 import com.br.financialmanager.application.usecases.transaction.*;
-import com.br.financialmanager.infra.gateways.RepositorioDeTransacaoJpa;
+import com.br.financialmanager.infra.gateways.transaction.RepositorioDeTransacaoJpa;
 import com.br.financialmanager.infra.persistence.TransacaoRepository;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;
@@ -44,7 +44,18 @@ public class TransacaoConfig {
 
   @Bean
   public NewTopic topicTransactionRequested() {
-    return TopicBuilder.name("transaction.requested").partitions(1).replicas(1).build();
+    return TopicBuilder.name("transaction.requested")
+      .partitions(1)
+      .replicas(1)
+      .build();
+  }
+
+  @Bean
+  public NewTopic topicTransactionRequestedDlt() {
+    return TopicBuilder.name("transaction.requested.DLT")
+      .partitions(1)
+      .replicas(1)
+      .build();
   }
 
   @Bean

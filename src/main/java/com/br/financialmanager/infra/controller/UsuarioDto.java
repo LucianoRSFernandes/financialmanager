@@ -9,7 +9,7 @@ import java.time.LocalDate;
 
 public record UsuarioDto(
   @NotBlank(message = "O CPF é obrigatório")
-  @CPF(message = "CPF inválido") // Adicionando validação extra de formato
+  @CpfValid(message = "CPF inválido (Erro na verificação dos dígitos)")
   String cpf,
 
   @NotBlank(message = "O nome é obrigatório")

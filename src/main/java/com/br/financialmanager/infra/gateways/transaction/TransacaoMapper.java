@@ -1,4 +1,4 @@
-package com.br.financialmanager.infra.gateways;
+package com.br.financialmanager.infra.gateways.transaction;
 
 import com.br.financialmanager.domain.transaction.Transacao;
 import com.br.financialmanager.infra.persistence.TransacaoEntity;

@@ -1,4 +1,4 @@
-package com.br.financialmanager.infra.gateways;
+package com.br.financialmanager.infra.gateways.user;
 
 import com.br.financialmanager.application.gateways.user.RepositorioDeUsuario;
 import com.br.financialmanager.domain.entities.Usuario;

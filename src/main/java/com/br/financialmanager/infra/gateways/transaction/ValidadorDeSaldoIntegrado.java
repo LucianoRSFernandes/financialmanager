@@ -1,4 +1,4 @@
-package com.br.financialmanager.infra.gateways;
+package com.br.financialmanager.infra.gateways.transaction;
 
 import com.br.financialmanager.application.gateways.transaction.ValidadorDeSaldo;
 import com.br.financialmanager.infra.gateways.http.BrasilApiClient;
