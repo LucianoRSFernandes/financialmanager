@@ -7,12 +7,15 @@ import com.br.financialmanager.application.gateways.transaction.ValidadorDeSaldo
 import com.br.financialmanager.domain.transaction.StatusTransacao;
 import com.br.financialmanager.domain.transaction.TipoTransacao;
 import com.br.financialmanager.domain.transaction.Transacao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class ProcessarTransacao {
 
+  private static final Logger log = LoggerFactory.getLogger(ProcessarTransacao.class);
   private final RepositorioDeTransacao repositorio;
   private final ValidadorDeSaldo validadorSaldo;
   private final ServicoDeCotacao servicoDeCotacao;
@@ -37,7 +40,7 @@ public class ProcessarTransacao {
       if (!"BRL".equalsIgnoreCase(moedaFinal)) {
         taxa = servicoDeCotacao.obterCotacao(moedaFinal);
         valorFinalBrl = valorOriginal.multiply(taxa);
-        System.out.println("💱 Conversão: " + valorOriginal + " " + moedaFinal + " -> R$ " + valorFinalBrl);
+        log.info("💱 Conversão: {} {} -> R$ {}", valorOriginal, moedaFinal, valorFinalBrl);
       }
 
       boolean aprovado = true;
@@ -56,15 +59,14 @@ public class ProcessarTransacao {
         valorFinalBrl,
         taxa,
         statusFinal,
-        LocalDateTime.now() // Data atual para aparecer no relatório
+        LocalDateTime.now()
       );
 
       repositorio.salvar(transacaoAtualizada);
-      System.out.println("✅ Transação processada: " + statusFinal);
+      log.info("✅ Transação processada: {}", statusFinal);
 
     } catch (Exception e) {
-      System.err.println("Erro processando transação: " + e.getMessage());
-      e.printStackTrace();
+      log.error("Erro processando transação: {}", e.getMessage(), e);
     }
   }
 }

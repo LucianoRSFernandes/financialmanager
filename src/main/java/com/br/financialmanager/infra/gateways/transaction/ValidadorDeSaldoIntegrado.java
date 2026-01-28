@@ -2,15 +2,21 @@ package com.br.financialmanager.infra.gateways.transaction;
 
 import com.br.financialmanager.application.gateways.transaction.ValidadorDeSaldo;
 import com.br.financialmanager.infra.gateways.http.BrasilApiClient;
+import com.br.financialmanager.infra.gateways.http.ContaMockDto;
 import com.br.financialmanager.infra.gateways.http.MockApiClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Component
 public class ValidadorDeSaldoIntegrado implements ValidadorDeSaldo {
+
+  private static final Logger log = LoggerFactory.getLogger(ValidadorDeSaldoIntegrado.class);
 
   private final MockApiClient mockApiClient;
   private final BrasilApiClient brasilApiClient;
@@ -23,30 +29,39 @@ public class ValidadorDeSaldoIntegrado implements ValidadorDeSaldo {
   @Override
   public boolean saldoEhSuficiente(String cpf, BigDecimal valorTransacao) {
     try {
-      System.out.println("====== INICIANDO VALIDAÇÕES EXTERNAS ======");
-
+      log.info("====== INICIANDO VALIDAÇÕES EXTERNAS ======");
 
       BigDecimal cotacao = buscarCotacaoDolarRecente();
       if (cotacao != null) {
-        System.out.println("💵 [BrasilAPI] Dólar: R$ " + cotacao);
+        log.info("💵 [BrasilAPI] Dólar: R$ {}", cotacao);
       } else {
-        System.out.println("⚠️ [BrasilAPI] Sem cotação recente disponível.");
+        log.warn("⚠️ [BrasilAPI] Sem cotação recente disponível.");
       }
 
-      // 2. SALDO (Mock API)
-      var conta = mockApiClient.buscarConta("1");
-      System.out.println("💰 [MockAPI] Saldo: " + conta.saldo() + " | Limite: " + conta.limite());
+      String cpfLimpo = cpf.replaceAll("\\D", "");
+
+      List<ContaMockDto> contasEncontradas = mockApiClient.buscarPorCpf(cpfLimpo);
+
+      if (contasEncontradas.isEmpty()) {
+        log.warn("⚠️ [MockAPI] Nenhuma conta encontrada para o CPF: {}", cpfLimpo);
+        return false;
+      }
+
+      ContaMockDto conta = contasEncontradas.get(0);
+
+      log.info("💰 [MockAPI] Conta encontrada ID: {} | Saldo: {} | Limite: {}",
+        conta.id(), conta.saldo(), conta.limite());
 
       BigDecimal totalDisponivel = conta.saldo().add(conta.limite());
       boolean aprovado = totalDisponivel.compareTo(valorTransacao) >= 0;
 
-      System.out.println("🏁 Resultado: " + (aprovado ? "APROVADO" : "REJEITADO"));
-      System.out.println("===========================================");
+      log.info("🏁 Resultado: {}", (aprovado ? "APROVADO" : "REJEITADO"));
+      log.info("===========================================");
 
       return aprovado;
 
     } catch (Exception e) {
-      System.err.println("❌ Erro na integração: " + e.getMessage());
+      log.error("❌ Erro na integração: {}", e.getMessage(), e);
       return false;
     }
   }
@@ -55,7 +70,6 @@ public class ValidadorDeSaldoIntegrado implements ValidadorDeSaldo {
     LocalDate data = LocalDate.now();
     DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-
     for (int i = 0; i < 5; i++) {
       try {
         var resp = brasilApiClient.buscarCotacao("USD", data.format(fmt));
@@ -63,7 +77,7 @@ public class ValidadorDeSaldoIntegrado implements ValidadorDeSaldo {
           return resp.cotacoes().get(resp.cotacoes().size() - 1).cotacao_venda();
         }
       } catch (Exception e) {
-
+        log.debug("Tentativa de cotação falhou para data {}: {}", data, e.getMessage());
       }
       data = data.minusDays(1);
     }

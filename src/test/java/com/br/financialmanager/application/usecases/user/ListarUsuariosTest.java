@@ -1,7 +1,6 @@
-package com.br.financialmanager.application.usecases;
+package com.br.financialmanager.application.usecases.user;
 
 import com.br.financialmanager.application.gateways.user.RepositorioDeUsuario;
-import com.br.financialmanager.application.usecases.user.ListarUsuarios;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 

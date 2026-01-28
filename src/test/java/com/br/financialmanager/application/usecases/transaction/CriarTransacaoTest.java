@@ -1,8 +1,7 @@
-package com.br.financialmanager.application.usecases;
+package com.br.financialmanager.application.usecases.transaction;
 
 import com.br.financialmanager.application.gateways.transaction.PublicadorDeTransacao;
 import com.br.financialmanager.application.gateways.transaction.RepositorioDeTransacao;
-import com.br.financialmanager.application.usecases.transaction.CriarTransacao;
 import com.br.financialmanager.domain.transaction.Transacao;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

@@ -3,6 +3,8 @@ package com.br.financialmanager.application.usecases.user;
 import com.br.financialmanager.application.gateways.user.LeitorDeArquivo;
 import com.br.financialmanager.application.gateways.user.RepositorioDeUsuario;
 import com.br.financialmanager.domain.entities.Usuario;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.InputStream;
@@ -10,6 +12,7 @@ import java.util.List;
 
 public class ImportarUsuarios {
 
+  private static final Logger log = LoggerFactory.getLogger(ImportarUsuarios.class);
   private final RepositorioDeUsuario repositorio;
   private final LeitorDeArquivo leitor;
   private final PasswordEncoder passwordEncoder;
@@ -38,9 +41,9 @@ public class ImportarUsuarios {
         );
 
         repositorio.cadastrarUsuario(usuarioSeguro);
-        System.out.println("✅ Usuário importado: " + usuario.getNome());
+        log.info("✅ Usuário importado: {}", usuario.getNome());
       } catch (Exception e) {
-        System.err.println("⚠️ Falha ao importar " + usuario.getNome() + ": " + e.getMessage());
+        log.error("⚠️ Falha ao importar {}: {}", usuario.getNome(), e.getMessage());
       }
     }
   }

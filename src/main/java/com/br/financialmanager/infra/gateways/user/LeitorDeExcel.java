@@ -3,6 +3,8 @@ package com.br.financialmanager.infra.gateways.user;
 import com.br.financialmanager.application.gateways.user.LeitorDeArquivo;
 import com.br.financialmanager.domain.entities.Usuario;
 import org.apache.poi.ss.usermodel.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.time.LocalDate;
@@ -11,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LeitorDeExcel implements LeitorDeArquivo {
+
+  private static final Logger log = LoggerFactory.getLogger(LeitorDeExcel.class);
 
   @Override
   public List<Usuario> lerUsuarios(InputStream arquivo) {
@@ -41,18 +45,18 @@ public class LeitorDeExcel implements LeitorDeArquivo {
               nascimento = LocalDate.parse(dataString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             }
           } catch (Exception e) {
-            System.err.println("⚠️ Data inválida na linha " + (i+1) + ": " + dataString);
+            log.warn("⚠️ Data inválida na linha {}: {}", (i + 1), dataString);
             nascimento = LocalDate.now();
           }
 
           usuarios.add(new Usuario(cpf, nome, nascimento, email, senha));
 
         } catch (Exception e) {
-          System.err.println("❌ Erro na linha " + (i+1) + ": " + e.getMessage());
+          log.error("❌ Erro na linha {}: {}", (i + 1), e.getMessage());
         }
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error("Erro fatal ao processar Excel: {}", e.getMessage(), e);
       throw new RuntimeException("Erro ao processar Excel: " + e.getMessage(), e);
     }
     return usuarios;

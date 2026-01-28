@@ -8,6 +8,8 @@ import com.br.financialmanager.infra.gateways.http.MockApiClient;
 import com.br.financialmanager.infra.persistence.UsuarioEntity;
 import com.br.financialmanager.infra.security.TokenService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
+  private static final Logger log = LoggerFactory.getLogger(UsuarioController.class);
   private final CriarUsuario criarUsuario;
   private final ListarUsuarios listarUsuarios;
   private final AlterarUsuario alteraUsuario;
@@ -73,11 +76,10 @@ public class UsuarioController {
       return ResponseEntity.ok(token);
 
     } catch (org.springframework.security.core.AuthenticationException e) {
-      // Log para debug
-      System.err.println("❌ Erro de Autenticação: " + e.getMessage());
+      log.error("❌ Erro de Autenticação: {}", e.getMessage());
       return ResponseEntity.status(401).body("Falha na autenticação: " + e.getMessage());
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error("Erro inesperado no login", e);
       return ResponseEntity.badRequest().body("Erro ao processar login");
     }
   }
@@ -149,15 +151,22 @@ public class UsuarioController {
       importarUsuarios.executar(file.getInputStream());
       return ResponseEntity.ok("Importação concluída com sucesso!");
     } catch (IOException e) {
+      log.error("Erro ao ler arquivo de upload: {}", e.getMessage());
       return ResponseEntity.badRequest().body("Erro ao ler arquivo: " + e.getMessage());
     } catch (Exception e) {
+      log.error("Erro na importação de usuários: {}", e.getMessage());
       return ResponseEntity.badRequest().body("Erro na importação: " + e.getMessage());
     }
   }
 
   @GetMapping("/{id}/saldo")
   public ResponseEntity<ContaMockDto> consultarSaldo(@PathVariable String id) {
-    var saldo = mockApiClient.buscarConta("1");
-    return ResponseEntity.ok(saldo);
+    var listaContas = mockApiClient.buscarPorCpf(id);
+
+    if (listaContas.isEmpty()) {
+      return ResponseEntity.notFound().build();
+    }
+
+    return ResponseEntity.ok(listaContas.get(0));
   }
 }
