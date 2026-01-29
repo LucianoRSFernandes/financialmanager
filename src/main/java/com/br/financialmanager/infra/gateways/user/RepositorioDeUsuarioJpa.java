@@ -48,4 +48,9 @@ public class RepositorioDeUsuarioJpa implements RepositorioDeUsuario {
     UsuarioEntity entity = repositorio.findByCpf(cpf);
     repositorio.deleteById(entity.getId());
   }
+
+  @Override
+  public boolean existePorCpf(String cpf) {
+    return repositorio.findByCpf(cpf) != null;
+  }
 }

@@ -11,6 +11,10 @@ public class CriarUsuario {
   }
 
   public Usuario cadastrarUsuario(Usuario usuario) {
+    if (repositorio.existePorCpf(usuario.getCpf())) {
+      throw new IllegalArgumentException("Já existe um usuário cadastrado com este CPF.");
+    }
+
     return repositorio.cadastrarUsuario(usuario);
   }
 }
