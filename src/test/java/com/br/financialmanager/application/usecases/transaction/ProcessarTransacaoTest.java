@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 import java.math.BigDecimal;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -20,7 +21,6 @@ public class ProcessarTransacaoTest {
 
   @Test
   public void deveAprovarTransacaoComSaldoSuficienteEConverterDolar() {
-
     RepositorioDeTransacao repositorio = Mockito.mock(RepositorioDeTransacao.class);
     ValidadorDeSaldo validador = Mockito.mock(ValidadorDeSaldo.class);
     ServicoDeCotacao cotacao = Mockito.mock(ServicoDeCotacao.class);
@@ -60,5 +60,25 @@ public class ProcessarTransacaoTest {
     verify(repositorio).salvar(captor.capture());
 
     Assertions.assertEquals(StatusTransacao.REJEITADA, captor.getValue().getStatus());
+  }
+
+  @Test
+  public void deveValidarSaldoParaTransferencia() {
+    RepositorioDeTransacao repositorio = Mockito.mock(RepositorioDeTransacao.class);
+    ValidadorDeSaldo validador = Mockito.mock(ValidadorDeSaldo.class);
+    ServicoDeCotacao cotacao = Mockito.mock(ServicoDeCotacao.class);
+
+    when(validador.saldoEhSuficiente(any(), any())).thenReturn(false);
+
+    ProcessarTransacao useCase = new ProcessarTransacao(repositorio, validador, cotacao);
+
+    useCase.executar("id-transf", "cpf-1", new BigDecimal("500.00"), "BRL", "TRANSFERENCIA");
+
+    ArgumentCaptor<Transacao> captor = ArgumentCaptor.forClass(Transacao.class);
+    verify(repositorio).salvar(captor.capture());
+
+    Assertions.assertEquals(StatusTransacao.REJEITADA, captor.getValue().getStatus());
+
+    verify(validador).saldoEhSuficiente(eq("cpf-1"), any());
   }
 }

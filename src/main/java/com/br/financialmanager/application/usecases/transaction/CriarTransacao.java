@@ -2,6 +2,7 @@ package com.br.financialmanager.application.usecases.transaction;
 
 import com.br.financialmanager.application.gateways.transaction.PublicadorDeTransacao;
 import com.br.financialmanager.application.gateways.transaction.RepositorioDeTransacao;
+import com.br.financialmanager.domain.transaction.CategoriaTransacao;
 import com.br.financialmanager.domain.transaction.TipoTransacao;
 import com.br.financialmanager.domain.transaction.Transacao;
 
@@ -17,11 +18,14 @@ public class CriarTransacao {
     this.publicador = publicador;
   }
 
-  public Transacao executar(String usuarioCpf, BigDecimal valor, String moeda, String tipoString) {
-    TipoTransacao tipo = TipoTransacao.valueOf(tipoString);
-    Transacao novaTransacao = new Transacao(usuarioCpf, valor, moeda, tipo);
+  public Transacao executar(String usuarioCpf, BigDecimal valor, String moeda, TipoTransacao tipo, CategoriaTransacao categoria) {
+
+    Transacao novaTransacao = new Transacao(usuarioCpf, valor, moeda, tipo, categoria);
+
     Transacao salva = repositorio.salvar(novaTransacao);
+
     publicador.publicarSolicitacao(salva);
+
     return salva;
   }
 }

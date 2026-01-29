@@ -2,6 +2,8 @@ package com.br.financialmanager.application.usecases.transaction;
 
 import com.br.financialmanager.application.gateways.transaction.PublicadorDeTransacao;
 import com.br.financialmanager.application.gateways.transaction.RepositorioDeTransacao;
+import com.br.financialmanager.domain.transaction.CategoriaTransacao;
+import com.br.financialmanager.domain.transaction.TipoTransacao;
 import com.br.financialmanager.domain.transaction.Transacao;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -21,11 +23,17 @@ public class CriarTransacaoTest {
     PublicadorDeTransacao publicador = Mockito.mock(PublicadorDeTransacao.class);
 
     CriarTransacao useCase = new CriarTransacao(repositorio, publicador);
+
     when(repositorio.salvar(any(Transacao.class)))
       .thenAnswer(invocation -> invocation.getArgument(0));
 
     Transacao resultado = useCase.executar(
-      "123.456.789-00", new BigDecimal("100"), "BRL", "SAIDA");
+      "123.456.789-00",
+      new BigDecimal("100"),
+      "BRL",
+      TipoTransacao.SAIDA,
+      CategoriaTransacao.COMPRA
+    );
 
     Assertions.assertNotNull(resultado);
     verify(repositorio).salvar(any(Transacao.class));

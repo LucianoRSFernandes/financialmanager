@@ -1,11 +1,8 @@
 package com.br.financialmanager.infra.controller;
 
-import com.br.financialmanager.application.usecases.transaction.BuscarTransacao;
-import com.br.financialmanager.application.usecases.transaction.CriarTransacao;
-import com.br.financialmanager.application.usecases.transaction.GerarAnaliseFinanceira;
-import com.br.financialmanager.application.usecases.transaction.ListarTransacoes;
-import com.br.financialmanager.domain.transaction.ResumoDiario;
-import com.br.financialmanager.domain.transaction.Transacao;
+import com.br.financialmanager.application.gateways.transaction.FiltroTransacao;
+import com.br.financialmanager.application.usecases.transaction.*;
+import com.br.financialmanager.domain.transaction.*;
 import com.br.financialmanager.infra.controller.dto.TransacaoRequestDto;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -13,12 +10,12 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.IOException;
-import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -29,20 +26,45 @@ public class TransacaoController {
   private final ListarTransacoes listarTransacoes;
   private final BuscarTransacao buscarTransacao;
   private final GerarAnaliseFinanceira gerarAnalise;
+  private final CancelarTransacao cancelarTransacao;
 
   public TransacaoController(CriarTransacao criarTransacao,
                              ListarTransacoes listarTransacoes,
                              BuscarTransacao buscarTransacao,
-                             GerarAnaliseFinanceira gerarAnalise) {
+                             GerarAnaliseFinanceira gerarAnalise,
+                             CancelarTransacao cancelarTransacao) {
     this.criarTransacao = criarTransacao;
     this.listarTransacoes = listarTransacoes;
     this.buscarTransacao = buscarTransacao;
     this.gerarAnalise = gerarAnalise;
+    this.cancelarTransacao = cancelarTransacao;
   }
 
   @GetMapping
-  public List<Transacao> listarTodas() {
-    return listarTransacoes.obterTodasTransacoes();
+  public ResponseEntity<Pagina<Transacao>> listar(
+    @RequestParam(required = false) String usuarioId,
+    @RequestParam(required = false) StatusTransacao status,
+    @RequestParam(required = false) TipoTransacao tipo,
+    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
+    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim,
+    @RequestParam(defaultValue = "0") int pagina,
+    @RequestParam(defaultValue = "10") int tamanho
+  ) {
+    FiltroTransacao filtro = new FiltroTransacao(usuarioId, dataInicio, dataFim, status, tipo);
+    Pagina<Transacao> resultado = listarTransacoes.executar(filtro, pagina, tamanho);
+    return ResponseEntity.ok(resultado);
+  }
+
+  @PatchMapping("/{id}/cancelar")
+  public ResponseEntity<Void> cancelar(@PathVariable String id) {
+    try {
+      cancelarTransacao.executar(id);
+      return ResponseEntity.noContent().build();
+    } catch (IllegalStateException e) {
+      return ResponseEntity.badRequest().build();
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.notFound().build();
+    }
   }
 
   @GetMapping("/{id}")
@@ -74,12 +96,13 @@ public class TransacaoController {
       Row headerRow = sheet.createRow(0);
       headerRow.createCell(0).setCellValue("ID");
       headerRow.createCell(1).setCellValue("CPF");
-      headerRow.createCell(2).setCellValue("Tipo"); // <--- NOVA COLUNA
-      headerRow.createCell(3).setCellValue("Valor (Original)");
-      headerRow.createCell(4).setCellValue("Moeda");
-      headerRow.createCell(5).setCellValue("Valor (R$)");
-      headerRow.createCell(6).setCellValue("Status");
-      headerRow.createCell(7).setCellValue("Data");
+      headerRow.createCell(2).setCellValue("Tipo");
+      headerRow.createCell(3).setCellValue("Categoria"); // Nova Coluna
+      headerRow.createCell(4).setCellValue("Valor (Original)");
+      headerRow.createCell(5).setCellValue("Moeda");
+      headerRow.createCell(6).setCellValue("Valor (R$)");
+      headerRow.createCell(7).setCellValue("Status");
+      headerRow.createCell(8).setCellValue("Data");
 
       int rowIdx = 1;
       for (Transacao t : lista) {
@@ -87,26 +110,22 @@ public class TransacaoController {
 
         row.createCell(0).setCellValue(t.getId());
         row.createCell(1).setCellValue(t.getUsuarioId());
-
         row.createCell(2).setCellValue(t.getTipo() != null ? t.getTipo().name() : "");
+        row.createCell(3).setCellValue(t.getCategoria() != null ? t.getCategoria().name() : ""); // Categoria no Excel
 
-        if (t.getValorOriginal() != null) {
-          row.createCell(3).setCellValue(t.getValorOriginal().doubleValue());
-        } else {
-          row.createCell(3).setCellValue(0.0);
-        }
+        double valorOriginal = t.getValorOriginal() != null ? t.getValorOriginal()
+          .doubleValue() : 0.0;
+        row.createCell(4).setCellValue(valorOriginal);
 
-        row.createCell(4).setCellValue(t.getMoeda() != null ? t.getMoeda() : "");
+        row.createCell(5).setCellValue(t.getMoeda() != null ? t.getMoeda() : "");
 
-        if (t.getValorBrl() != null) {
-          row.createCell(5).setCellValue(t.getValorBrl().doubleValue());
-        } else {
-          BigDecimal valorAntigo = t.getValorOriginal() != null ? t.getValorOriginal() : BigDecimal.ZERO;
-          row.createCell(5).setCellValue(valorAntigo.doubleValue());
-        }
+        double valorBrl = t.getValorBrl() != null ? t.getValorBrl().doubleValue() : valorOriginal;
+        row.createCell(6).setCellValue(valorBrl);
 
-        row.createCell(6).setCellValue(t.getStatus() != null ? t.getStatus().name() : "DESCONHECIDO");
-        row.createCell(7).setCellValue(t.getDataCriacao() != null ? t.getDataCriacao().toString() : "");
+        row.createCell(7).setCellValue(t.getStatus() != null ? t.getStatus()
+          .name() : "DESCONHECIDO");
+        row.createCell(8).setCellValue(t.getDataCriacao() != null ? t.getDataCriacao()
+          .toString() : "");
       }
 
       workbook.write(response.getOutputStream());
@@ -120,9 +139,9 @@ public class TransacaoController {
       request.cpf(),
       request.valor(),
       request.moeda(),
-      request.tipo()
+      request.tipo(),
+      request.categoria()
     );
-
     return ResponseEntity.status(HttpStatus.CREATED).body(novaTransacao);
   }
 }

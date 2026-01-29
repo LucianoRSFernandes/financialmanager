@@ -44,22 +44,21 @@ public class TransacaoConfig {
 
   @Bean
   public NewTopic topicTransactionRequested() {
-    return TopicBuilder.name("transaction.requested")
-      .partitions(1)
-      .replicas(1)
-      .build();
+    return TopicBuilder.name("transaction.requested").partitions(1).replicas(1).build();
   }
 
   @Bean
   public NewTopic topicTransactionRequestedDlt() {
-    return TopicBuilder.name("transaction.requested.DLT")
-      .partitions(1)
-      .replicas(1)
-      .build();
+    return TopicBuilder.name("transaction.requested.DLT").partitions(1).replicas(1).build();
   }
 
   @Bean
   GerarAnaliseFinanceira gerarAnaliseFinanceira(RepositorioDeTransacao repo) {
     return new GerarAnaliseFinanceira(repo);
+  }
+
+  @Bean
+  CancelarTransacao cancelarTransacao(RepositorioDeTransacao repo) {
+    return new CancelarTransacao(repo);
   }
 }

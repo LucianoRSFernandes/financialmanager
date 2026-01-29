@@ -1,9 +1,9 @@
 package com.br.financialmanager.application.usecases.transaction;
 
-
 import com.br.financialmanager.application.gateways.transaction.RepositorioDeTransacao;
 import com.br.financialmanager.application.gateways.transaction.ServicoDeCotacao;
 import com.br.financialmanager.application.gateways.transaction.ValidadorDeSaldo;
+import com.br.financialmanager.domain.transaction.CategoriaTransacao;
 import com.br.financialmanager.domain.transaction.StatusTransacao;
 import com.br.financialmanager.domain.transaction.TipoTransacao;
 import com.br.financialmanager.domain.transaction.Transacao;
@@ -44,7 +44,7 @@ public class ProcessarTransacao {
       }
 
       boolean aprovado = true;
-      if (tipo == TipoTransacao.SAIDA) {
+      if (tipo == TipoTransacao.SAIDA || tipo == TipoTransacao.TRANSFERENCIA) {
         aprovado = validadorSaldo.saldoEhSuficiente(cpf, valorFinalBrl);
       }
 
@@ -59,7 +59,8 @@ public class ProcessarTransacao {
         valorFinalBrl,
         taxa,
         statusFinal,
-        LocalDateTime.now()
+        LocalDateTime.now(),
+        null
       );
 
       repositorio.salvar(transacaoAtualizada);

@@ -11,6 +11,7 @@ public class Transacao {
   private BigDecimal valorOriginal;
   private String moeda;
   private TipoTransacao tipo;
+  private CategoriaTransacao categoria;
 
   private BigDecimal valorBrl;
   private BigDecimal taxaConversao;
@@ -18,12 +19,14 @@ public class Transacao {
   private StatusTransacao status;
   private LocalDateTime dataCriacao;
 
-   public Transacao(String usuarioId, BigDecimal valorOriginal, String moeda, TipoTransacao tipo) {
+  public Transacao(String usuarioId, BigDecimal valorOriginal, String moeda,
+                   TipoTransacao tipo, CategoriaTransacao categoria) {
     this.id = UUID.randomUUID().toString();
     this.usuarioId = usuarioId;
     this.valorOriginal = valorOriginal;
     this.moeda = moeda != null ? moeda.toUpperCase() : "BRL";
     this.tipo = tipo;
+    this.categoria = categoria != null ? categoria : CategoriaTransacao.OUTROS;
     this.status = StatusTransacao.PENDENTE;
     this.dataCriacao = LocalDateTime.now();
 
@@ -35,7 +38,7 @@ public class Transacao {
 
   public Transacao(String id, String usuarioId, BigDecimal valorOriginal, String moeda,
                    TipoTransacao tipo, BigDecimal valorBrl, BigDecimal taxaConversao,
-                   StatusTransacao status, LocalDateTime dataCriacao) {
+                   StatusTransacao status, LocalDateTime dataCriacao, CategoriaTransacao categoria) {
     this.id = id;
     this.usuarioId = usuarioId;
     this.valorOriginal = valorOriginal;
@@ -45,6 +48,7 @@ public class Transacao {
     this.taxaConversao = taxaConversao;
     this.status = status;
     this.dataCriacao = dataCriacao;
+    this.categoria = categoria;
   }
 
   public void atualizarValoresConvertidos(BigDecimal taxa, BigDecimal valorEmReais) {
@@ -56,13 +60,25 @@ public class Transacao {
     this.status = novoStatus;
   }
 
+  public void cancelar() {
+    if (this.status != StatusTransacao.PENDENTE) {
+      throw new IllegalStateException("Apenas transações pendentes podem ser canceladas.");
+    }
+    this.status = StatusTransacao.CANCELADA;
+  }
+
   public String getId() { return id; }
   public String getUsuarioId() { return usuarioId; }
   public BigDecimal getValorOriginal() { return valorOriginal; }
   public String getMoeda() { return moeda; }
   public TipoTransacao getTipo() { return tipo; }
+  public CategoriaTransacao getCategoria() { return categoria; } // Novo Getter
   public BigDecimal getValorBrl() { return valorBrl; }
   public BigDecimal getTaxaConversao() { return taxaConversao; }
   public StatusTransacao getStatus() { return status; }
   public LocalDateTime getDataCriacao() { return dataCriacao; }
+
+  public void setCategoria(CategoriaTransacao categoria) {
+    this.categoria = categoria;
+  }
 }

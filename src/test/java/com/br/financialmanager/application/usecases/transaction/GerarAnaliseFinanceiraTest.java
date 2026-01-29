@@ -1,6 +1,7 @@
 package com.br.financialmanager.application.usecases.transaction;
 
 import com.br.financialmanager.application.gateways.transaction.RepositorioDeTransacao;
+import com.br.financialmanager.domain.transaction.CategoriaTransacao;
 import com.br.financialmanager.domain.transaction.ResumoDiario;
 import com.br.financialmanager.domain.transaction.StatusTransacao;
 import com.br.financialmanager.domain.transaction.TipoTransacao;
@@ -26,10 +27,11 @@ public class GerarAnaliseFinanceiraTest {
 
     Transacao t1 = new Transacao("1", "u1", BigDecimal.ZERO, "BRL",
       TipoTransacao.ENTRADA, new BigDecimal("100.00"), BigDecimal.ONE,
-      StatusTransacao.APROVADA, data);
+      StatusTransacao.APROVADA, data, CategoriaTransacao.SALARIO);
+
     Transacao t2 = new Transacao("2", "u1", BigDecimal.ZERO, "BRL",
       TipoTransacao.SAIDA, new BigDecimal("30.00"), BigDecimal.ONE,
-      StatusTransacao.APROVADA, data);
+      StatusTransacao.APROVADA, data, CategoriaTransacao.COMPRA);
 
     when(repositorio.listarTodas()).thenReturn(Arrays.asList(t1, t2));
 

@@ -15,7 +15,8 @@ public class TransacaoMapper {
       t.getValorBrl(),
       t.getTaxaConversao(),
       t.getStatus(),
-      t.getDataCriacao()
+      t.getDataCriacao(),
+      t.getCategoria()
     );
   }
 
@@ -29,7 +30,8 @@ public class TransacaoMapper {
       e.getValorBrl(),
       e.getTaxaConversao(),
       e.getStatus(),
-      e.getDataCriacao()
+      e.getDataCriacao(),
+      e.getCategoria()
     );
   }
 }

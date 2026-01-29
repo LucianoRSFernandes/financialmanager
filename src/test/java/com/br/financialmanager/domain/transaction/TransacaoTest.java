@@ -2,18 +2,21 @@ package com.br.financialmanager.domain.transaction;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import java.math.BigDecimal;
 
 public class TransacaoTest {
 
   @Test
   public void deveCriarTransacaoPadraoBRL() {
+
     Transacao transacao = new Transacao(
       "123",
       new BigDecimal("100.00"),
       "BRL",
-      TipoTransacao.SAIDA
+      TipoTransacao.SAIDA,
+      CategoriaTransacao.OUTROS
     );
 
     Assertions.assertEquals("BRL", transacao.getMoeda());
@@ -25,13 +28,79 @@ public class TransacaoTest {
 
   @Test
   public void deveNormalizarMoedaParaMaiusculo() {
+
     Transacao transacao = new Transacao(
       "123",
       new BigDecimal("50.00"),
       "usd",
-      TipoTransacao.ENTRADA
+      TipoTransacao.ENTRADA,
+      CategoriaTransacao.OUTROS
     );
 
     Assertions.assertEquals("USD", transacao.getMoeda());
+  }
+
+  @Test
+  public void deveCancelarTransacaoPendente() {
+    Transacao transacao = new Transacao(
+      "123",
+      BigDecimal.TEN,
+      "BRL",
+      TipoTransacao.SAIDA,
+      CategoriaTransacao.OUTROS
+    );
+
+    Assertions.assertEquals(StatusTransacao.PENDENTE, transacao.getStatus());
+
+    transacao.cancelar();
+
+    Assertions.assertEquals(StatusTransacao.CANCELADA, transacao.getStatus());
+  }
+
+  @Test
+  public void naoDeveCancelarTransacaoJaAprovada() {
+    Transacao transacao = new Transacao(
+      "123",
+      BigDecimal.TEN,
+      "BRL",
+      TipoTransacao.SAIDA,
+      CategoriaTransacao.OUTROS
+    );
+
+    transacao.definirStatus(StatusTransacao.APROVADA);
+
+    IllegalStateException exception = Assertions.assertThrows(
+      IllegalStateException.class,
+      transacao::cancelar
+    );
+
+    Assertions.assertEquals("Apenas transações pendentes podem ser canceladas.", exception.getMessage());
+  }
+
+  @Test
+  public void deveAssumirCategoriaOutrosQuandoForNula() {
+    Transacao transacao = new Transacao(
+      "123",
+      new BigDecimal("100.00"),
+      "BRL",
+      TipoTransacao.SAIDA,
+      null
+    );
+
+    Assertions.assertEquals(CategoriaTransacao.OUTROS, transacao.getCategoria());
+  }
+
+  @ParameterizedTest
+  @EnumSource(CategoriaTransacao.class)
+  public void deveAceitarTodasAsCategoriasDefinidas(CategoriaTransacao categoriaTeste) {
+    Transacao transacao = new Transacao(
+      "123",
+      new BigDecimal("100.00"),
+      "BRL",
+      TipoTransacao.ENTRADA,
+      categoriaTeste
+    );
+
+    Assertions.assertEquals(categoriaTeste, transacao.getCategoria());
   }
 }

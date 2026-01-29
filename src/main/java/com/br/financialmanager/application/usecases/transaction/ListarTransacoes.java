@@ -1,9 +1,9 @@
 package com.br.financialmanager.application.usecases.transaction;
 
+import com.br.financialmanager.application.gateways.transaction.FiltroTransacao;
 import com.br.financialmanager.application.gateways.transaction.RepositorioDeTransacao;
+import com.br.financialmanager.domain.transaction.Pagina;
 import com.br.financialmanager.domain.transaction.Transacao;
-
-import java.util.List;
 
 public class ListarTransacoes {
 
@@ -13,7 +13,11 @@ public class ListarTransacoes {
     this.repositorio = repositorio;
   }
 
-  public List<Transacao> obterTodasTransacoes() {
+  public Pagina<Transacao> executar(FiltroTransacao filtro, int pagina, int tamanho) {
+    return this.repositorio.listar(filtro, pagina, tamanho);
+  }
+
+  public java.util.List<Transacao> obterTodasTransacoes() {
     return this.repositorio.listarTodas();
   }
 }
