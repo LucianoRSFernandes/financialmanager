@@ -4,6 +4,10 @@ import com.br.financialmanager.application.gateways.transaction.FiltroTransacao;
 import com.br.financialmanager.application.usecases.transaction.*;
 import com.br.financialmanager.domain.transaction.*;
 import com.br.financialmanager.infra.controller.dto.TransacaoRequestDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.apache.poi.ss.usermodel.Row;
@@ -20,6 +24,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/transacoes")
+@Tag(name = "Transações", description = "Endpoints para gestão de movimentações financeiras")
 public class TransacaoController {
 
   private final CriarTransacao criarTransacao;
@@ -40,6 +45,7 @@ public class TransacaoController {
     this.cancelarTransacao = cancelarTransacao;
   }
 
+  @Operation(summary = "Listar transações", description = "Lista as transações com suporte a filtros e paginação")
   @GetMapping
   public ResponseEntity<Pagina<Transacao>> listar(
     @RequestParam(required = false) String usuarioId,
@@ -55,6 +61,7 @@ public class TransacaoController {
     return ResponseEntity.ok(resultado);
   }
 
+  @Operation(summary = "Cancelar transação", description = "Cancela uma transação pendente pelo ID")
   @PatchMapping("/{id}/cancelar")
   public ResponseEntity<Void> cancelar(@PathVariable String id) {
     try {
@@ -67,6 +74,7 @@ public class TransacaoController {
     }
   }
 
+  @Operation(summary = "Buscar por ID", description = "Retorna os detalhes de uma transação específica")
   @GetMapping("/{id}")
   public ResponseEntity<Transacao> buscarPorId(@PathVariable String id) {
     Transacao transacao = buscarTransacao.buscarPorId(id);
@@ -76,11 +84,13 @@ public class TransacaoController {
     return ResponseEntity.notFound().build();
   }
 
+  @Operation(summary = "Análise mensal", description = "Gera resumo diário de entradas e saídas para um mês específico")
   @GetMapping("/analise")
   public List<ResumoDiario> analiseMensal(@RequestParam int mes, @RequestParam int ano) {
     return gerarAnalise.executar(mes, ano);
   }
 
+  @Operation(summary = "Exportar Excel", description = "Gera um relatório Excel (.xlsx) de todas as transações")
   @GetMapping("/exportar")
   public void exportarRelatorio(HttpServletResponse response) throws IOException {
     response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
@@ -103,41 +113,33 @@ public class TransacaoController {
       headerRow.createCell(6).setCellValue("Valor (R$)");
       headerRow.createCell(7).setCellValue("Status");
       headerRow.createCell(8).setCellValue("Data");
-      headerRow.createCell(9).setCellValue("Apenas Registro"); // Nova coluna no Excel
+      headerRow.createCell(9).setCellValue("Apenas Registro");
 
       int rowIdx = 1;
       for (Transacao t : lista) {
         Row row = sheet.createRow(rowIdx++);
-
         row.createCell(0).setCellValue(t.getId());
         row.createCell(1).setCellValue(t.getUsuarioId());
         row.createCell(2).setCellValue(t.getTipo() != null ? t.getTipo().name() : "");
         row.createCell(3).setCellValue(t.getCategoria() != null ? t.getCategoria().name() : "");
-
-        double valorOriginal = t.getValorOriginal() != null ? t.getValorOriginal()
-          .doubleValue() : 0.0;
-        row.createCell(4).setCellValue(valorOriginal);
-
+        row.createCell(4).setCellValue(t.getValorOriginal() != null ? t.getValorOriginal().doubleValue() : 0.0);
         row.createCell(5).setCellValue(t.getMoeda() != null ? t.getMoeda() : "");
-
-        double valorBrl = t.getValorBrl() != null ? t.getValorBrl().doubleValue() : valorOriginal;
-        row.createCell(6).setCellValue(valorBrl);
-
-        row.createCell(7).setCellValue(t.getStatus() != null ? t.getStatus()
-          .name() : "DESCONHECIDO");
-        row.createCell(8).setCellValue(t.getDataCriacao() != null ? t.getDataCriacao()
-          .toString() : "");
-
+        row.createCell(6).setCellValue(t.getValorBrl() != null ? t.getValorBrl().doubleValue() : 0.0);
+        row.createCell(7).setCellValue(t.getStatus() != null ? t.getStatus().name() : "DESCONHECIDO");
+        row.createCell(8).setCellValue(t.getDataCriacao() != null ? t.getDataCriacao().toString() : "");
         row.createCell(9).setCellValue(t.isApenasRegistro() ? "SIM" : "NÃO");
       }
-
       workbook.write(response.getOutputStream());
     }
   }
 
+  @Operation(summary = "Solicitar nova transação", description = "Envia uma transação para processamento assíncrono via Kafka")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "201", description = "Transação criada com sucesso"),
+    @ApiResponse(responseCode = "400", description = "Dados de entrada inválidos")
+  })
   @PostMapping
   public ResponseEntity<Transacao> solicitarTransacao(@RequestBody @Valid TransacaoRequestDto request) {
-
     Transacao novaTransacao = criarTransacao.executar(
       request.cpf(),
       request.valor(),
