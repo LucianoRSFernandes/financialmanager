@@ -14,8 +14,7 @@ import java.math.BigDecimal;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class ProcessarTransacaoTest {
 
@@ -31,7 +30,7 @@ public class ProcessarTransacaoTest {
     ProcessarTransacao useCase = new ProcessarTransacao(repositorio, validador, cotacao);
 
     useCase.executar("id-1", "cpf-1", new BigDecimal("100"),
-      "USD", "SAIDA");
+      "USD", "SAIDA", false);
 
     ArgumentCaptor<Transacao> captor = ArgumentCaptor.forClass(Transacao.class);
     verify(repositorio).salvar(captor.capture());
@@ -54,7 +53,7 @@ public class ProcessarTransacaoTest {
     ProcessarTransacao useCase = new ProcessarTransacao(repositorio, validador, cotacao);
 
     useCase.executar("id-2", "cpf-1", new BigDecimal("1000"),
-      "BRL", "SAIDA");
+      "BRL", "SAIDA", false);
 
     ArgumentCaptor<Transacao> captor = ArgumentCaptor.forClass(Transacao.class);
     verify(repositorio).salvar(captor.capture());
@@ -72,7 +71,8 @@ public class ProcessarTransacaoTest {
 
     ProcessarTransacao useCase = new ProcessarTransacao(repositorio, validador, cotacao);
 
-    useCase.executar("id-transf", "cpf-1", new BigDecimal("500.00"), "BRL", "TRANSFERENCIA");
+    useCase.executar("id-transf", "cpf-1", new BigDecimal("500.00"),
+      "BRL", "TRANSFERENCIA", false);
 
     ArgumentCaptor<Transacao> captor = ArgumentCaptor.forClass(Transacao.class);
     verify(repositorio).salvar(captor.capture());
@@ -80,5 +80,25 @@ public class ProcessarTransacaoTest {
     Assertions.assertEquals(StatusTransacao.REJEITADA, captor.getValue().getStatus());
 
     verify(validador).saldoEhSuficiente(eq("cpf-1"), any());
+  }
+
+  @Test
+  public void deveIgnorarSaldoSeForApenasRegistro() {
+    RepositorioDeTransacao repositorio = Mockito.mock(RepositorioDeTransacao.class);
+    ValidadorDeSaldo validador = Mockito.mock(ValidadorDeSaldo.class);
+    ServicoDeCotacao cotacao = Mockito.mock(ServicoDeCotacao.class);
+
+    ProcessarTransacao useCase = new ProcessarTransacao(repositorio, validador, cotacao);
+
+    useCase.executar("id-reg", "cpf-1", new BigDecimal("999999"),
+      "BRL", "SAIDA", true);
+
+    ArgumentCaptor<Transacao> captor = ArgumentCaptor.forClass(Transacao.class);
+    verify(repositorio).salvar(captor.capture());
+
+    verify(validador, never()).saldoEhSuficiente(any(), any());
+
+    Assertions.assertEquals(StatusTransacao.APROVADA, captor.getValue().getStatus());
+    Assertions.assertTrue(captor.getValue().isApenasRegistro());
   }
 }

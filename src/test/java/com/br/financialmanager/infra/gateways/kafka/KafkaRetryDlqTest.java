@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -20,11 +19,11 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import java.math.BigDecimal;
 import java.util.Map;
-
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
@@ -41,22 +40,23 @@ public class KafkaRetryDlqTest {
   @Autowired
   private EmbeddedKafkaBroker embeddedKafkaBroker;
 
-  @MockBean
+  @MockitoBean
   private ProcessarTransacao processarTransacao;
 
   @Test
   public void deveTentarReprocessarEEnviarParaDlqQuandoFalhar() {
+
     Mockito.doThrow(new RuntimeException("Erro simulado de conexão"))
       .when(processarTransacao)
-      .executar(any(), any(), any(), any(), any());
+      .executar(any(), any(), any(), any(), any(), anyBoolean());
 
     TransacaoEvent evento = new TransacaoEvent("id-123", "user-1",
-      BigDecimal.TEN, "BRL", "SAIDA");
+      BigDecimal.TEN, "BRL", "SAIDA", false);
 
     kafkaTemplate.send("transaction.requested", "id-123", evento);
 
     verify(processarTransacao, timeout(10000).times(4))
-      .executar(any(), any(), any(), any(), any());
+      .executar(any(), any(), any(), any(), any(), anyBoolean());
 
     Consumer<String, String> consumerDlq = criarConsumidorDeTeste();
     embeddedKafkaBroker.consumeFromAnEmbeddedTopic(consumerDlq,

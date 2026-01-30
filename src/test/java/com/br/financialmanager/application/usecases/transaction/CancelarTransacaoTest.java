@@ -1,7 +1,7 @@
 package com.br.financialmanager.application.usecases.transaction;
 
 import com.br.financialmanager.application.gateways.transaction.RepositorioDeTransacao;
-import com.br.financialmanager.domain.transaction.CategoriaTransacao; // Import
+import com.br.financialmanager.domain.transaction.CategoriaTransacao;
 import com.br.financialmanager.domain.transaction.StatusTransacao;
 import com.br.financialmanager.domain.transaction.TipoTransacao;
 import com.br.financialmanager.domain.transaction.Transacao;
@@ -26,7 +26,8 @@ public class CancelarTransacaoTest {
       BigDecimal.TEN,
       "BRL",
       TipoTransacao.SAIDA,
-      CategoriaTransacao.OUTROS
+      CategoriaTransacao.OUTROS,
+      false
     );
     String idTransacao = transacaoPendente.getId();
 

@@ -7,26 +7,25 @@ import java.util.UUID;
 public class Transacao {
   private String id;
   private String usuarioId;
-
   private BigDecimal valorOriginal;
   private String moeda;
   private TipoTransacao tipo;
   private CategoriaTransacao categoria;
-
   private BigDecimal valorBrl;
   private BigDecimal taxaConversao;
-
   private StatusTransacao status;
   private LocalDateTime dataCriacao;
+  private boolean apenasRegistro;
 
   public Transacao(String usuarioId, BigDecimal valorOriginal, String moeda,
-                   TipoTransacao tipo, CategoriaTransacao categoria) {
+                   TipoTransacao tipo, CategoriaTransacao categoria, boolean apenasRegistro) {
     this.id = UUID.randomUUID().toString();
     this.usuarioId = usuarioId;
     this.valorOriginal = valorOriginal;
     this.moeda = moeda != null ? moeda.toUpperCase() : "BRL";
     this.tipo = tipo;
     this.categoria = categoria != null ? categoria : CategoriaTransacao.OUTROS;
+    this.apenasRegistro = apenasRegistro;
     this.status = StatusTransacao.PENDENTE;
     this.dataCriacao = LocalDateTime.now();
 
@@ -38,7 +37,8 @@ public class Transacao {
 
   public Transacao(String id, String usuarioId, BigDecimal valorOriginal, String moeda,
                    TipoTransacao tipo, BigDecimal valorBrl, BigDecimal taxaConversao,
-                   StatusTransacao status, LocalDateTime dataCriacao, CategoriaTransacao categoria) {
+                   StatusTransacao status, LocalDateTime dataCriacao,
+                   CategoriaTransacao categoria, boolean apenasRegistro) {
     this.id = id;
     this.usuarioId = usuarioId;
     this.valorOriginal = valorOriginal;
@@ -49,7 +49,10 @@ public class Transacao {
     this.status = status;
     this.dataCriacao = dataCriacao;
     this.categoria = categoria;
+    this.apenasRegistro = apenasRegistro;
   }
+
+  public boolean isApenasRegistro() { return apenasRegistro; }
 
   public void atualizarValoresConvertidos(BigDecimal taxa, BigDecimal valorEmReais) {
     this.taxaConversao = taxa;

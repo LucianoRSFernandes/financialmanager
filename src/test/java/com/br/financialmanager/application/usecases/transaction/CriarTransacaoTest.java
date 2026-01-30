@@ -32,7 +32,8 @@ public class CriarTransacaoTest {
       new BigDecimal("100"),
       "BRL",
       TipoTransacao.SAIDA,
-      CategoriaTransacao.COMPRA
+      CategoriaTransacao.COMPRA,
+      false
     );
 
     Assertions.assertNotNull(resultado);

@@ -27,7 +27,8 @@ public class KafkaConsumerImpl {
       evento.usuarioId(),
       evento.valor(),
       evento.moeda(),
-      evento.tipo()
+      evento.tipo(),
+      evento.apenasRegistro()
     );
   }
 }

@@ -9,7 +9,6 @@ import com.br.financialmanager.domain.transaction.Transacao;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -27,11 +26,11 @@ public class GerarAnaliseFinanceiraTest {
 
     Transacao t1 = new Transacao("1", "u1", BigDecimal.ZERO, "BRL",
       TipoTransacao.ENTRADA, new BigDecimal("100.00"), BigDecimal.ONE,
-      StatusTransacao.APROVADA, data, CategoriaTransacao.SALARIO);
+      StatusTransacao.APROVADA, data, CategoriaTransacao.SALARIO, false);
 
     Transacao t2 = new Transacao("2", "u1", BigDecimal.ZERO, "BRL",
       TipoTransacao.SAIDA, new BigDecimal("30.00"), BigDecimal.ONE,
-      StatusTransacao.APROVADA, data, CategoriaTransacao.COMPRA);
+      StatusTransacao.APROVADA, data, CategoriaTransacao.COMPRA, false);
 
     when(repositorio.listarTodas()).thenReturn(Arrays.asList(t1, t2));
 

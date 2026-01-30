@@ -24,7 +24,8 @@ public class KafkaProducerImpl implements PublicadorDeTransacao {
       t.getUsuarioId(),
       t.getValorOriginal(),
       t.getMoeda(),
-      t.getTipo().name()
+      t.getTipo().name(),
+      t.isApenasRegistro()
     );
 
     kafkaTemplate.send("transaction.requested", t.getId(), event);

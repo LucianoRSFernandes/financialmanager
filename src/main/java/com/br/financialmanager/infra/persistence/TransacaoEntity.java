@@ -31,11 +31,14 @@ public class TransacaoEntity {
 
   private LocalDateTime dataCriacao;
 
+  private boolean apenasRegistro; 
+
   public TransacaoEntity() {}
 
   public TransacaoEntity(String id, String usuarioId, BigDecimal valorOriginal, String moeda,
                          TipoTransacao tipo, BigDecimal valorBrl, BigDecimal taxaConversao,
-                         StatusTransacao status, LocalDateTime dataCriacao, CategoriaTransacao categoria) {
+                         StatusTransacao status, LocalDateTime dataCriacao,
+                         CategoriaTransacao categoria, boolean apenasRegistro) {
     this.id = id;
     this.usuarioId = usuarioId;
     this.valorOriginal = valorOriginal;
@@ -46,6 +49,7 @@ public class TransacaoEntity {
     this.status = status;
     this.dataCriacao = dataCriacao;
     this.categoria = categoria;
+    this.apenasRegistro = apenasRegistro;
   }
 
   public String getId() { return id; }
@@ -77,4 +81,7 @@ public class TransacaoEntity {
 
   public LocalDateTime getDataCriacao() { return dataCriacao; }
   public void setDataCriacao(LocalDateTime dataCriacao) { this.dataCriacao = dataCriacao; }
+
+  public boolean isApenasRegistro() { return apenasRegistro; }
+  public void setApenasRegistro(boolean apenasRegistro) { this.apenasRegistro = apenasRegistro; }
 }

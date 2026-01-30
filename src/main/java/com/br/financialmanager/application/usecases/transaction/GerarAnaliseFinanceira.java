@@ -25,8 +25,8 @@ public class GerarAnaliseFinanceira {
 
     Map<LocalDate, List<Transacao>> transacoesPorDia = todas.stream()
       .filter(t -> t.getDataCriacao() != null)
-      .filter(t -> t.getDataCriacao()
-        .getMonthValue() == mes && t.getDataCriacao().getYear() == ano)
+      .filter(t -> !t.isApenasRegistro())
+      .filter(t -> t.getDataCriacao().getMonthValue() == mes && t.getDataCriacao().getYear() == ano)
       .collect(Collectors.groupingBy(t -> t.getDataCriacao().toLocalDate()));
 
     Map<LocalDate, ResumoDiario> resumoOrdenado = new TreeMap<>();

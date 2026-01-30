@@ -16,7 +16,8 @@ public class TransacaoMapper {
       t.getTaxaConversao(),
       t.getStatus(),
       t.getDataCriacao(),
-      t.getCategoria()
+      t.getCategoria(),
+      t.isApenasRegistro()
     );
   }
 
@@ -31,7 +32,8 @@ public class TransacaoMapper {
       e.getTaxaConversao(),
       e.getStatus(),
       e.getDataCriacao(),
-      e.getCategoria()
+      e.getCategoria(),
+      e.isApenasRegistro()
     );
   }
 }

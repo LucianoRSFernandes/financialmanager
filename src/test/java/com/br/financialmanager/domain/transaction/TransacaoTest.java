@@ -10,13 +10,13 @@ public class TransacaoTest {
 
   @Test
   public void deveCriarTransacaoPadraoBRL() {
-
     Transacao transacao = new Transacao(
       "123",
       new BigDecimal("100.00"),
       "BRL",
       TipoTransacao.SAIDA,
-      CategoriaTransacao.OUTROS
+      CategoriaTransacao.OUTROS,
+      false
     );
 
     Assertions.assertEquals("BRL", transacao.getMoeda());
@@ -24,17 +24,18 @@ public class TransacaoTest {
     Assertions.assertEquals(StatusTransacao.PENDENTE, transacao.getStatus());
     Assertions.assertNotNull(transacao.getId());
     Assertions.assertNotNull(transacao.getDataCriacao());
+    Assertions.assertFalse(transacao.isApenasRegistro());
   }
 
   @Test
   public void deveNormalizarMoedaParaMaiusculo() {
-
     Transacao transacao = new Transacao(
       "123",
       new BigDecimal("50.00"),
       "usd",
       TipoTransacao.ENTRADA,
-      CategoriaTransacao.OUTROS
+      CategoriaTransacao.OUTROS,
+      false
     );
 
     Assertions.assertEquals("USD", transacao.getMoeda());
@@ -47,13 +48,12 @@ public class TransacaoTest {
       BigDecimal.TEN,
       "BRL",
       TipoTransacao.SAIDA,
-      CategoriaTransacao.OUTROS
+      CategoriaTransacao.OUTROS,
+      false
     );
 
     Assertions.assertEquals(StatusTransacao.PENDENTE, transacao.getStatus());
-
     transacao.cancelar();
-
     Assertions.assertEquals(StatusTransacao.CANCELADA, transacao.getStatus());
   }
 
@@ -64,7 +64,8 @@ public class TransacaoTest {
       BigDecimal.TEN,
       "BRL",
       TipoTransacao.SAIDA,
-      CategoriaTransacao.OUTROS
+      CategoriaTransacao.OUTROS,
+      false
     );
 
     transacao.definirStatus(StatusTransacao.APROVADA);
@@ -84,7 +85,8 @@ public class TransacaoTest {
       new BigDecimal("100.00"),
       "BRL",
       TipoTransacao.SAIDA,
-      null
+      null,
+      false
     );
 
     Assertions.assertEquals(CategoriaTransacao.OUTROS, transacao.getCategoria());
@@ -98,7 +100,8 @@ public class TransacaoTest {
       new BigDecimal("100.00"),
       "BRL",
       TipoTransacao.ENTRADA,
-      categoriaTeste
+      categoriaTeste,
+      false
     );
 
     Assertions.assertEquals(categoriaTeste, transacao.getCategoria());

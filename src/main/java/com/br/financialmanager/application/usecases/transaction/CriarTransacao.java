@@ -18,12 +18,12 @@ public class CriarTransacao {
     this.publicador = publicador;
   }
 
-  public Transacao executar(String usuarioCpf, BigDecimal valor, String moeda, TipoTransacao tipo, CategoriaTransacao categoria) {
+  public Transacao executar(String usuarioCpf, BigDecimal valor, String moeda,
+                            TipoTransacao tipo, CategoriaTransacao categoria,
+                            boolean apenasRegistro) {
 
-    Transacao novaTransacao = new Transacao(usuarioCpf, valor, moeda, tipo, categoria);
-
+    Transacao novaTransacao = new Transacao(usuarioCpf, valor, moeda, tipo, categoria, apenasRegistro);
     Transacao salva = repositorio.salvar(novaTransacao);
-
     publicador.publicarSolicitacao(salva);
 
     return salva;

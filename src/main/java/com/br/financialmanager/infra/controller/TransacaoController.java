@@ -97,12 +97,13 @@ public class TransacaoController {
       headerRow.createCell(0).setCellValue("ID");
       headerRow.createCell(1).setCellValue("CPF");
       headerRow.createCell(2).setCellValue("Tipo");
-      headerRow.createCell(3).setCellValue("Categoria"); // Nova Coluna
+      headerRow.createCell(3).setCellValue("Categoria");
       headerRow.createCell(4).setCellValue("Valor (Original)");
       headerRow.createCell(5).setCellValue("Moeda");
       headerRow.createCell(6).setCellValue("Valor (R$)");
       headerRow.createCell(7).setCellValue("Status");
       headerRow.createCell(8).setCellValue("Data");
+      headerRow.createCell(9).setCellValue("Apenas Registro"); // Nova coluna no Excel
 
       int rowIdx = 1;
       for (Transacao t : lista) {
@@ -111,7 +112,7 @@ public class TransacaoController {
         row.createCell(0).setCellValue(t.getId());
         row.createCell(1).setCellValue(t.getUsuarioId());
         row.createCell(2).setCellValue(t.getTipo() != null ? t.getTipo().name() : "");
-        row.createCell(3).setCellValue(t.getCategoria() != null ? t.getCategoria().name() : ""); // Categoria no Excel
+        row.createCell(3).setCellValue(t.getCategoria() != null ? t.getCategoria().name() : "");
 
         double valorOriginal = t.getValorOriginal() != null ? t.getValorOriginal()
           .doubleValue() : 0.0;
@@ -126,6 +127,8 @@ public class TransacaoController {
           .name() : "DESCONHECIDO");
         row.createCell(8).setCellValue(t.getDataCriacao() != null ? t.getDataCriacao()
           .toString() : "");
+
+        row.createCell(9).setCellValue(t.isApenasRegistro() ? "SIM" : "NÃO");
       }
 
       workbook.write(response.getOutputStream());
@@ -140,7 +143,8 @@ public class TransacaoController {
       request.valor(),
       request.moeda(),
       request.tipo(),
-      request.categoria()
+      request.categoria(),
+      request.apenasRegistro()
     );
     return ResponseEntity.status(HttpStatus.CREATED).body(novaTransacao);
   }

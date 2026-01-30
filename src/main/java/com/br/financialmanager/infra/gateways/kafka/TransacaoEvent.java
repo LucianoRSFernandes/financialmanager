@@ -7,5 +7,6 @@ public record TransacaoEvent(
   String usuarioId,
   BigDecimal valor,
   String moeda,
-  String tipo
+  String tipo,
+  boolean apenasRegistro
 ) {}
