@@ -5,6 +5,7 @@ import com.br.financialmanager.domain.entities.Usuario;
 import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
 import java.time.LocalDate;
@@ -12,6 +13,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class LeitorDeExcel implements LeitorDeArquivo {
 
   private static final Logger log = LoggerFactory.getLogger(LeitorDeExcel.class);

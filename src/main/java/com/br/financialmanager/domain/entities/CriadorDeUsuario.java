@@ -7,7 +7,7 @@ public class CriadorDeUsuario {
   private Usuario usuario;
 
   public Usuario nomeCpfNascimento (String nome, String cpf, LocalDate nascimento) {
-    this.usuario = new Usuario(cpf, nome, nascimento, "", "123456");
+    this.usuario = new Usuario(cpf, nome, nascimento, "email@teste.com", "123456");
     return this.usuario;
   }
 }

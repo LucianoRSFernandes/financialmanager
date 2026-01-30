@@ -10,10 +10,10 @@ import com.br.financialmanager.infra.security.TokenService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,31 +30,28 @@ public class UsuarioController {
   private final ListarUsuarios listarUsuarios;
   private final AlterarUsuario alteraUsuario;
   private final ExcluirUsuario excluiUsuario;
-  private final TokenService tokenService;
   private final ImportarUsuarios importarUsuarios;
+  private final TokenService tokenService;
   private final MockApiClient mockApiClient;
   private final AuthenticationManager authenticationManager;
-  private final PasswordEncoder passwordEncoder;
 
   public UsuarioController(
     CriarUsuario criarUsuario,
     ListarUsuarios listarUsuarios,
     AlterarUsuario alteraUsuario,
-    ExcluirUsuario excluirUsuario,
-    TokenService tokenService,
+    ExcluirUsuario excluiUsuario,
     ImportarUsuarios importarUsuarios,
+    TokenService tokenService,
     MockApiClient mockApiClient,
-    AuthenticationManager authenticationManager,
-    PasswordEncoder passwordEncoder) {
+    AuthenticationManager authenticationManager) {
     this.criarUsuario = criarUsuario;
     this.listarUsuarios = listarUsuarios;
     this.alteraUsuario = alteraUsuario;
-    this.excluiUsuario = excluirUsuario;
-    this.tokenService = tokenService;
+    this.excluiUsuario = excluiUsuario;
     this.importarUsuarios = importarUsuarios;
+    this.tokenService = tokenService;
     this.mockApiClient = mockApiClient;
     this.authenticationManager = authenticationManager;
-    this.passwordEncoder = passwordEncoder;
   }
 
   @PostMapping("/login")
@@ -85,46 +82,50 @@ public class UsuarioController {
   }
 
   @PostMapping
-  public UsuarioDto cadastrarUsuario(@RequestBody @Valid UsuarioDto dto) {
-    String senhaCriptografada = passwordEncoder.encode(dto.senha());
+  public ResponseEntity<UsuarioDto> cadastrarUsuario(@RequestBody @Valid UsuarioDto dto) {
 
-    Usuario salvo = criarUsuario.cadastrarUsuario(new Usuario(
+    Usuario novoUsuario = new Usuario(
       dto.cpf(),
       dto.nome(),
       dto.nascimento(),
       dto.email(),
-      senhaCriptografada
-    ));
+      dto.senha()
+    );
 
-    return new UsuarioDto(
+    Usuario salvo = criarUsuario.executar(novoUsuario);
+
+    UsuarioDto responseDto = new UsuarioDto(
       salvo.getCpf(),
       salvo.getNome(),
       salvo.getNascimento(),
       salvo.getEmail(),
-      salvo.getSenha());
+      salvo.getSenha()
+    );
+
+    return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
   }
 
   @GetMapping
-  public List<UsuarioDto> listarUsuario() {
-    return listarUsuarios.obterTodosUsuarios().stream()
+  public ResponseEntity<List<UsuarioDto>> listarUsuario() {
+    List<UsuarioDto> lista = listarUsuarios.executar().stream() // Padronizado para 'executar'
       .map(u -> new UsuarioDto(u.getCpf(),
         u.getNome(), u.getNascimento(), u.getEmail(), u.getSenha()))
       .collect(Collectors.toList());
+
+    return ResponseEntity.ok(lista);
   }
 
   @PutMapping("/{cpf}")
   public ResponseEntity<UsuarioDto> atualizarUsuario(@PathVariable String cpf, @RequestBody @Valid UsuarioDto dto) {
-    String senhaCriptografada = passwordEncoder.encode(dto.senha());
-
     Usuario usuarioParaAtualizar = new Usuario(
       cpf,
       dto.nome(),
       dto.nascimento(),
       dto.email(),
-      senhaCriptografada
+      dto.senha()
     );
 
-    Usuario atualizado = alteraUsuario.alteraDadosUsuario(cpf, usuarioParaAtualizar);
+    Usuario atualizado = alteraUsuario.executar(cpf, usuarioParaAtualizar);
 
     if (atualizado == null) {
       return ResponseEntity.notFound().build();
@@ -141,7 +142,7 @@ public class UsuarioController {
 
   @DeleteMapping("/{cpf}")
   public ResponseEntity<Void> excluirUsuario(@PathVariable String cpf) {
-    excluiUsuario.excluirUsuario(cpf);
+    excluiUsuario.executar(cpf);
     return ResponseEntity.noContent().build();
   }
 

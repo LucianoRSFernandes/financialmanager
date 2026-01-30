@@ -4,11 +4,14 @@ import com.br.financialmanager.application.gateways.user.RepositorioDeUsuario;
 import com.br.financialmanager.domain.entities.Usuario;
 import com.br.financialmanager.infra.persistence.UsuarioEntity;
 import com.br.financialmanager.infra.persistence.UsuarioRepository;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class RepositorioDeUsuarioJpa implements RepositorioDeUsuario {
+
   private final UsuarioRepository repositorio;
   private final UsuarioEntityMapper mapper;
 
@@ -20,8 +23,12 @@ public class RepositorioDeUsuarioJpa implements RepositorioDeUsuario {
   @Override
   public Usuario cadastrarUsuario(Usuario usuario) {
     UsuarioEntity entity = mapper.toEntity(usuario);
-    repositorio.save(entity);
-    return mapper.toDomain(entity);
+    return mapper.toDomain(repositorio.save(entity));
+  }
+
+  @Override
+  public boolean existePorCpf(String cpf) {
+    return repositorio.findByCpf(cpf) != null;
   }
 
   @Override
@@ -34,11 +41,12 @@ public class RepositorioDeUsuarioJpa implements RepositorioDeUsuario {
   @Override
   public Usuario alteraUsuario(String cpf, Usuario usuario) {
     UsuarioEntity entity = repositorio.findByCpf(cpf);
+
     if (entity != null) {
-      var atualizado = mapper.toEntity(usuario);
+      UsuarioEntity atualizado = mapper.toEntity(usuario);
       atualizado.setId(entity.getId());
-      repositorio.save(atualizado);
-      return mapper.toDomain(atualizado);
+
+      return mapper.toDomain(repositorio.save(atualizado));
     }
     return null;
   }
@@ -46,11 +54,9 @@ public class RepositorioDeUsuarioJpa implements RepositorioDeUsuario {
   @Override
   public void excluiUsuario(String cpf) {
     UsuarioEntity entity = repositorio.findByCpf(cpf);
-    repositorio.deleteById(entity.getId());
-  }
 
-  @Override
-  public boolean existePorCpf(String cpf) {
-    return repositorio.findByCpf(cpf) != null;
+    if (entity != null) {
+      repositorio.deleteById(entity.getId());
+    }
   }
 }

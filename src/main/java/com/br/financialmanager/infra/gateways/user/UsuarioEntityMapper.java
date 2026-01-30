@@ -2,7 +2,9 @@ package com.br.financialmanager.infra.gateways.user;
 
 import com.br.financialmanager.domain.entities.Usuario;
 import com.br.financialmanager.infra.persistence.UsuarioEntity;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UsuarioEntityMapper {
 
   public UsuarioEntity toEntity(Usuario usuario){

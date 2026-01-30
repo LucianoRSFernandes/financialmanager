@@ -18,7 +18,7 @@ public class ListarUsuariosTest {
 
     when(repositorio.listarTodos()).thenReturn(Collections.emptyList());
 
-    useCase.obterTodosUsuarios();
+    useCase.executar();
 
     verify(repositorio).listarTodos();
   }

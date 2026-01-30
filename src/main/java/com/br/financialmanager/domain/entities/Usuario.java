@@ -1,6 +1,7 @@
 package com.br.financialmanager.domain.entities;
 
 import java.time.LocalDate;
+import java.util.regex.Pattern;
 
 public class Usuario {
   private String senha;
@@ -9,28 +10,27 @@ public class Usuario {
   private LocalDate nascimento;
   private String email;
 
+  private static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
+
   public Usuario(String cpf, String nome, LocalDate nascimento, String email, String senha) {
-    // 1. Validação de formato do CPF (Regex)
+
     if (cpf == null || !cpf.matches("\\d{3}\\.\\d{3}\\.\\d{3}\\-\\d{2}")) {
       throw new IllegalArgumentException("CPF fora do padrão (Formato esperado: 000.000.000-00)");
     }
-
-    // 2. Validação do Algoritmo do CPF (Lógica trazida para o domínio)
     if (!cpfValido(cpf)) {
       throw new IllegalArgumentException("CPF inválido (Dígitos verificadores incorretos)");
     }
-
-    // 3. Validação de Senha
     if (senha == null || senha.trim().length() < 6) {
       throw new IllegalArgumentException("A senha deve ter pelo menos 6 caracteres");
     }
-
-    // 4. Validação de Data de Nascimento
     if (nascimento == null) {
       throw new IllegalArgumentException("A data de nascimento é obrigatória");
     }
     if (nascimento.isAfter(LocalDate.now())) {
       throw new IllegalArgumentException("A data de nascimento não pode ser no futuro");
+    }
+    if (email == null || !Pattern.matches(EMAIL_REGEX, email)) {
+      throw new IllegalArgumentException("Formato de e-mail inválido");
     }
 
     this.cpf = cpf;

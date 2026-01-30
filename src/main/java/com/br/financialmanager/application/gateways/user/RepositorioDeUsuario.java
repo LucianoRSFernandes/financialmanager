@@ -5,9 +5,13 @@ import com.br.financialmanager.domain.entities.Usuario;
 import java.util.List;
 
 public interface RepositorioDeUsuario {
-  Usuario cadastrarUsuario (Usuario usuario);
-  List<Usuario> listarTodos();
-  Usuario alteraUsuario (String cpf, Usuario usuario);
-  void excluiUsuario(String cpf);
+  Usuario cadastrarUsuario(Usuario usuario);
+
   boolean existePorCpf(String cpf);
+
+  List<Usuario> listarTodos();
+
+  Usuario alteraUsuario(String cpf, Usuario usuario);
+
+  void excluiUsuario(String cpf);
 }
